@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cinder — Quit Smoking</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ember: #FF4B1F;
+    --ember-dim: #C43A17;
+    --ash: #1A1A1C;
+    --smoke: #2E2E32;
+    --haze: #3D3D42;
+    --mist: #6B6B72;
+    --cloud: #A8A8B0;
+    --white: #F5F4F2;
+    --cream: #EDE9E3;
+    --jade: #3ECF8E;
+    --jade-dim: #2BA370;
+    --gold: #F5C842;
+    --alert: #FF6B35;
+    --card-bg: #232326;
+    --card-border: rgba(255,255,255,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--ash);
+    color: var(--white);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 0 40px;
+  }
+
+  .phone-shell {
+    width: 390px;
+    min-height: 844px;
+    background: var(--ash);
+    border-radius: 44px;
+    border: 1.5px solid var(--haze);
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--cloud);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+
+  /* Screens */
+  .screen { display: none; flex-direction: column; min-height: 844px; }
+  .screen.active { display: flex; }
+
+  /* =========== ONBOARDING =========== */
+  #screen-onboard {
+    background: radial-gradient(ellipse at 30% 20%, rgba(255,75,31,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(255,75,31,0.08) 0%, transparent 50%),
+                var(--ash);
+    padding: 0;
+    justify-content: space-between;
+  }
+
+  .onboard-top {
+    padding: 60px 32px 0;
+  }
+
+  .logo-mark {
+    width: 52px; height: 52px;
+    background: var(--ember);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(255,75,31,0.4);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 8px 32px rgba(255,75,31,0.4); }
+    50% { box-shadow: 0 8px 48px rgba(255,75,31,0.7); }
+  }
+
+  .onboard-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .onboard-headline span { color: var(--ember); }
+
+  .onboard-sub {
+    color: var(--cloud);
+    font-size: 15px;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .onboard-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 32px;
+    margin: 0 0 8px;
+  }
+  .stat-chip {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  .stat-chip .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--ember);
+  }
+  .stat-chip .lbl {
+    font-size: 11px;
+    color: var(--mist);
+    margin-top: 2px;
+    line-height: 1.3;
+  }
+
+  .onboard-cta {
+    padding: 0 32px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-primary {
+    background: var(--ember);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-size: 16px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(255,75,31,0.35);
+  }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--cloud);
+    border: 1px solid var(--haze);
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+  }
+
+  /* =========== PLEDGE SETUP =========== */
+  #screen-pledge {
+    padding: 0;
+    background: var(--ash);
+  }
+
+  .screen-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px 12px;
+  }
+  .back-btn {
+    width: 36px; height: 36px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .back-btn:active { background: var(--haze); }
+  .screen-title {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .pledge-amount-card {
+    margin: 8px 20px;
+    background: linear-gradient(135deg, #1E1E22 0%, #28282E 100%);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .pledge-label { color: var(--mist); font-size: 13px; margin-bottom: 12px; }
+  .pledge-amount-display {
+    font-family: 'DM Serif Display', serif;
+    font-size: 64px;
+    color: var(--ember);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .pledge-currency { color: var(--mist); font-size: 14px; }
+
+  .pledge-slider-wrap { padding: 8px 8px 0; }
+  .pledge-slider {
+    width: 100%;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--ember) 0%, var(--ember) 33%, var(--haze) 33%);
+    outline: none;
+    cursor: pointer;
+    margin-top: 16px;
+  }
+  .pledge-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid var(--ember);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+  }
+
+  .pledge-presets {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px 0;
+    justify-content: center;
+  }
+  .preset-chip {
+    padding: 8px 18px;
+    border-radius: 100px;
+    border: 1px solid var(--haze);
+    background: transparent;
+    color: var(--cloud);
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: all 0.15s;
+  }
+  .preset-chip.active {
+    background: rgba(255,75,31,0.15);
+    border-color: var(--ember);
+    color: var(--ember);
+  }
+
+  .funding-breakdown {
+    margin: 20px 20px 0;
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--card-border);
+    overflow: hidden;
+  }
+  .funding-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .funding-row:last-child { border-bottom: none; }
+  .funding-row-label { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+  .funding-icon {
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .funding-amount { font-family: 'Space Mono', monospace; font-size: 15px; color: var(--jade); font-weight: 700; }
+  .funding-total-row {
+    background: rgba(62,207,142,0.08);
+    border-top: 1px solid rgba(62,207,142,0.2) !important;
+  }
+  .funding-total-row .funding-row-label { color: var(--jade); font-weight: 700; }
+  .funding-total-row .funding-amount { color: var(--jade); font-size: 18px; }
+
+  .connect-section { padding: 20px 20px 0; }
+  .connect-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+  }
+  .connect-left { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+  .connect-icon { font-size: 20px; }
+  .connect-label { font-size: 14px; }
+  .connect-sublabel { font-size: 11px; color: var(--mist); margin-top: 1px; }
+  .toggle {
+    width: 44px; height: 26px;
+    background: var(--haze);
+    border-radius: 13px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--jade); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    background: white;
+    border-radius: 50%;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .toggle.on::after { transform: translateX(18px); }
+
+  .pledge-cta { padding: 20px 20px 40px; }
+
+  /* =========== DASHBOARD =========== */
+  #screen-dashboard {
+    background: var(--ash);
+    overflow-y: auto;
+  }
+
+  .dash-header {
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .dash-greeting { font-size: 13px; color: var(--mist); }
+  .dash-name { font-size: 20px; font-weight: 700; }
+  .dash-avatar {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--ember), var(--gold));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  /* Hero streak card */
+  .streak-card {
+    margin: 0 20px;
+    background: linear-gradient(135deg, #FF4B1F 0%, #C43A17 50%, #8B2A10 100%);
+    border-radius: 28px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(255,75,31,0.35);
+  }
+  .streak-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 180px; height: 180px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .streak-card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; left: -20px;
+    width: 200px; height: 200px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 50%;
+  }
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 100px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .streak-days {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .streak-label { font-size: 16px; opacity: 0.85; margin-bottom: 20px; }
+  .streak-meta {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .streak-meta-item { font-size: 12px; opacity: 0.8; }
+  .streak-meta-item strong { display: block; font-size: 18px; font-family: 'Space Mono', monospace; opacity: 1; }
+
+  /* Verification strip */
+  .verify-strip {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px 0;
+  }
+  .verify-chip {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 14px 12px;
+    text-align: center;
+  }
+  .verify-chip.ok { border-color: rgba(62,207,142,0.3); background: rgba(62,207,142,0.06); }
+  .verify-chip.warn { border-color: rgba(245,200,66,0.3); background: rgba(245,200,66,0.06); }
+  .verify-chip-icon { font-size: 20px; margin-bottom: 4px; }
+  .verify-chip-label { font-size: 10px; color: var(--mist); text-transform: uppercase; letter-spacing: 0.5px; }
+  .verify-chip-status { font-size: 12px; font-weight: 700; margin-top: 2px; }
+  .verify-chip.ok .verify-chip-status { color: var(--jade); }
+  .verify-chip.warn .verify-chip-status { color: var(--gold); }
+
+  /* Section titles */
+  .section-title {
+    padding: 20px 20px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--mist);
+  }
+
+  /* Pledge progress card */
+  .pledge-progress-card {
+    margin: 0 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 22px 22px 18px;
+  }
+  .pledge-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .pledge-progress-label { font-size: 14px; color: var(--cloud); }
+  .pledge-progress-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--jade);
+  }
+  .pledge-progress-sub { font-size: 12px; color: var(--mist); text-align: right; }
+
+  .progress-track {
+    height: 8px;
+    background: var(--haze);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--jade-dim), var(--jade));
+    width: 37%;
+    position: relative;
+    transition: width 0.5s ease;
+  }
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: -2px;
+    width: 12px; height: 12px;
+    background: var(--jade);
+    border-radius: 50%;
+    border: 2px solid var(--ash);
+  }
+
+  .pledge-breakdown-mini {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .pledge-mini-item {
+    flex: 1;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 10px 8px;
+  }
+  .pledge-mini-val { font-family: 'Space Mono', monospace; font-size: 14px; color: var(--white); }
+  .pledge-mini-lbl { font-size: 10px; color: var(--mist); margin-top: 3px; }
+
+  /* HRV / biometric cards */
+  .biometric-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 0 20px;
+  }
+  .bio-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 18px 16px;
+  }
+  .bio-card-icon { font-size: 22px; margin-bottom: 8px; }
+  .bio-card-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .bio-card-unit { font-size: 11px; color: var(--mist); margin-left: 2px; }
+  .bio-card-label { font-size: 11px; color: var(--mist); margin-top: 4px; }
+  .bio-card-trend {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 11px;
+    margin-top: 6px;
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+  .trend-up { background: rgba(62,207,142,0.12); color: var(--jade); }
+  .trend-down { background: rgba(62,207,142,0.12); color: var(--jade); }
+
+  /* Social support */
+  .supporters-card {
+    margin: 0 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 20px;
+  }
+  .supporters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .supporters-title { font-size: 15px; font-weight: 700; }
+  .supporters-count {
+    font-size: 12px;
+    color: var(--ember);
+    background: rgba(255,75,31,0.1);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+  .supporter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--card-border);
+  }
+  .supporter-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .supporter-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .supporter-info { flex: 1; }
+  .supporter-name { font-size: 13px; font-weight: 500; }
+  .supporter-msg { font-size: 11px; color: var(--mist); margin-top: 1px; }
+  .supporter-amount { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--jade); }
+
+  /* Nav bar */
+  .nav-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(26,26,28,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--card-border);
+    padding: 10px 0 28px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 20px;
+    border-radius: 12px;
+    transition: all 0.15s;
+  }
+  .nav-item.active .nav-icon { color: var(--ember); }
+  .nav-item.active .nav-label { color: var(--ember); }
+  .nav-icon { font-size: 22px; color: var(--mist); }
+  .nav-label { font-size: 10px; color: var(--mist); font-weight: 500; }
+
+  /* =========== JITAI ALERT SCREEN =========== */
+  #screen-alert {
+    background: var(--ash);
+    justify-content: flex-end;
+    position: relative;
+  }
+
+  .alert-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+  }
+
+  .alert-sheet {
+    position: relative;
+    background: var(--smoke);
+    border-radius: 32px 32px 0 0;
+    padding: 0 0 48px;
+    z-index: 10;
+    animation: slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  @keyframes slide-up {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .alert-handle {
+    width: 36px; height: 4px;
+    background: var(--haze);
+    border-radius: 2px;
+    margin: 12px auto 0;
+  }
+
+  .alert-inner { padding: 24px 24px 0; }
+
+  .alert-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,107,53,0.15);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--alert);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 20px;
+  }
+
+  .alert-headline {
+    font-family: 'DM Serif Display', serif;
+    font-size: 30px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+
+  .alert-context {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .alert-context-item {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--cloud);
+  }
+  .alert-context-icon { font-size: 18px; margin-bottom: 4px; }
+  .alert-context-val { font-weight: 700; font-size: 14px; color: var(--white); margin-top: 2px; }
+
+  .alert-stakes {
+    background: rgba(255,75,31,0.08);
+    border: 1px solid rgba(255,75,31,0.2);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .alert-stakes-label { font-size: 12px; color: var(--mist); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stakes-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .stakes-row:last-child { margin-bottom: 0; border-top: 1px solid rgba(255,75,31,0.15); padding-top: 10px; margin-top: 2px; }
+  .stakes-from { font-size: 13px; color: var(--cloud); display: flex; align-items: center; gap: 6px; }
+  .stakes-amount { font-family: 'Space Mono', monospace; font-size: 14px; color: var(--ember); }
+  .stakes-total { font-size: 15px; color: var(--white); font-weight: 700; }
+  .stakes-total-amount { font-family: 'Space Mono', monospace; font-size: 18px; color: var(--ember); font-weight: 700; }
+
+  .alert-ctas {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 24px;
+    margin-top: 4px;
+  }
+  .btn-calm {
+    background: var(--jade);
+    color: var(--ash);
+    border: none;
+    border-radius: 16px;
+    padding: 18px;
+    font-size: 16px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(62,207,142,0.3);
+  }
+  .btn-breathing {
+    background: transparent;
+    color: var(--cloud);
+    border: 1px solid var(--haze);
+    border-radius: 16px;
+    padding: 16px;
+    font-size: 15px;
+    font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer;
+  }
+
+  /* =========== SUCCESS SCREEN =========== */
+  #screen-success {
+    background: radial-gradient(ellipse at 50% 30%, rgba(62,207,142,0.2) 0%, transparent 60%), var(--ash);
+    justify-content: center;
+    align-items: center;
+    padding: 40px 32px;
+    text-align: center;
+  }
+
+  .success-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 3px solid rgba(62,207,142,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 28px;
+    position: relative;
+    animation: ring-pulse 2s ease-in-out infinite;
+  }
+  @keyframes ring-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(62,207,142,0.3); }
+    50% { box-shadow: 0 0 0 20px rgba(62,207,142,0); }
+  }
+  .success-icon-inner {
+    width: 90px; height: 90px;
+    background: var(--jade);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 40px;
+  }
+
+  .success-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .success-sub {
+    color: var(--cloud);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  .payout-card {
+    background: rgba(62,207,142,0.08);
+    border: 1px solid rgba(62,207,142,0.25);
+    border-radius: 24px;
+    padding: 24px;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+  .payout-label { font-size: 13px; color: var(--mist); margin-bottom: 8px; }
+  .payout-amount {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--jade);
+    line-height: 1;
+  }
+  .payout-sub { font-size: 13px; color: var(--mist); margin-top: 4px; }
+  .payout-streak { font-size: 18px; color: var(--white); margin-top: 12px; font-weight: 700; }
+
+  .success-cta { width: 100%; }
+
+  /* Bottom spacer on scroll screens */
+  .scroll-spacer { height: 20px; }
+
+  /* Transitions */
+  .screen { animation: fade-in 0.3s ease; }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollable inner */
+  .scrollable { overflow-y: auto; flex: 1; }
+
+  /* Week progress strip */
+  .week-strip {
+    display: flex;
+    gap: 6px;
+    padding: 0 20px;
+  }
+  .week-day {
+    flex: 1;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 10px;
+    color: var(--mist);
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+  }
+  .week-day.clean { border-color: rgba(62,207,142,0.35); background: rgba(62,207,142,0.08); }
+  .week-day.clean .week-dot { background: var(--jade); }
+  .week-day.today { border-color: var(--ember); background: rgba(255,75,31,0.08); }
+  .week-day.today .week-dot { background: var(--ember); }
+  .week-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--haze); }
+
+  /* External desktop hints */
+  @media (min-width: 500px) {
+    body { padding: 40px 20px; background: #111; }
+    .phone-shell { margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-shell">
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <div class="status-icons">
+      <span>●●●</span>
+      <span>WiFi</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 1: ONBOARDING ===== -->
+  <div id="screen-onboard" class="screen active">
+    <div class="onboard-top">
+      <div class="logo-mark">🔥</div>
+      <div class="onboard-headline">
+        Quit.<br>Get paid<br><span>to stay quit.</span>
+      </div>
+      <div class="onboard-sub">Cinder uses your own money — matched by your employer and friends — to make quitting the financially rational choice.</div>
+    </div>
+
+    <div class="onboard-stats">
+      <div class="stat-chip">
+        <div class="num">316M</div>
+        <div class="lbl">Smokers in China</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">97.5%</div>
+        <div class="lbl">AI smoking detection accuracy</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">4.3×</div>
+        <div class="lbl">Higher quit rates vs. unassisted</div>
+      </div>
+      <div class="stat-chip">
+        <div class="num">¥1,500</div>
+        <div class="lbl">Avg. total pledge pool</div>
+      </div>
+    </div>
+
+    <div class="onboard-cta">
+      <button class="btn-primary" onclick="goTo('screen-pledge')">开始戒烟 — Start Quitting</button>
+      <button class="btn-secondary" onclick="goTo('screen-dashboard')">View Demo Dashboard →</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 2: PLEDGE SETUP ===== -->
+  <div id="screen-pledge" class="screen" style="overflow-y:auto;">
+    <div class="screen-header">
+      <div class="back-btn" onclick="goTo('screen-onboard')">←</div>
+      <div class="screen-title">Set Your Pledge</div>
+    </div>
+
+    <div class="pledge-amount-card">
+      <div class="pledge-label">Your personal stake</div>
+      <div>
+        <span class="pledge-amount-display" id="pledge-display">500</span>
+        <span style="font-size:28px;font-family:'DM Serif Display',serif;color:var(--ember)"> ¥</span>
+      </div>
+      <div class="pledge-currency">You get this back when you succeed.</div>
+      <div class="pledge-slider-wrap">
+        <input type="range" class="pledge-slider" id="pledge-slider" min="100" max="2000" step="100" value="500" oninput="updatePledge(this.value)">
+      </div>
+    </div>
+
+    <div class="pledge-presets">
+      <button class="preset-chip active" onclick="setPledge(300, this)">¥300</button>
+      <button class="preset-chip" onclick="setPledge(500, this)">¥500</button>
+      <button class="preset-chip" onclick="setPledge(1000, this)">¥1,000</button>
+      <button class="preset-chip" onclick="setPledge(2000, this)">¥2,000</button>
+    </div>
+
+    <div class="funding-breakdown">
+      <div class="funding-row">
+        <div class="funding-row-label">
+          <div class="funding-icon" style="background:rgba(255,75,31,0.15);color:var(--ember);">💰</div>
+          <div>
+            <div>Your pledge</div>
+            <div style="font-size:11px;color:var(--mist);">Returned on success</div>
+          </div>
+        </div>
+        <div class="funding-amount" id="f-you">¥500</div>
+      </div>
+      <div class="funding-row">
+        <div class="funding-row-label">
+          <div class="funding-icon" style="background:rgba(62,207,142,0.12);color:var(--jade);">🏢</div>
+          <div>
+            <div>Employer match</div>
+            <div style="font-size:11px;color:var(--mist);">100% employer-funded</div>
+          </div>
+        </div>
+        <div class="funding-amount" id="f-employer">¥500</div>
+      </div>
+      <div class="funding-row">
+        <div class="funding-row-label">
+          <div class="funding-icon" style="background:rgba(245,200,66,0.12);color:var(--gold);">👨‍👩‍👧</div>
+          <div>
+            <div>Friends & family</div>
+            <div style="font-size:11px;color:var(--mist);">Crowdfunded via WeChat</div>
+          </div>
+        </div>
+        <div class="funding-amount" id="f-social">¥500</div>
+      </div>
+      <div class="funding-row funding-total-row">
+        <div class="funding-row-label">
+          <div class="funding-icon" style="background:rgba(62,207,142,0.15);color:var(--jade);">🎯</div>
+          <div style="font-size:15px;font-weight:700;">Total at stake</div>
+        </div>
+        <div class="funding-amount" id="f-total" style="font-size:20px;">¥1,500</div>
+      </div>
+    </div>
+
+    <div class="connect-section">
+      <div style="font-size:11px;color:var(--mist);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Connect Devices</div>
+      <div class="connect-row">
+        <div class="connect-left">
+          <div class="connect-icon">⌚</div>
+          <div>
+            <div class="connect-label">Huawei Health</div>
+            <div class="connect-sublabel">HRV, Heart Rate, Steps</div>
+          </div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="connect-row">
+        <div class="connect-left">
+          <div class="connect-icon">💳</div>
+          <div>
+            <div class="connect-label">WeChat Pay</div>
+            <div class="connect-sublabel">Transaction monitoring</div>
+          </div>
+        </div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="connect-row">
+        <div class="connect-left">
+          <div class="connect-icon">🎤</div>
+          <div>
+            <div class="connect-label">Acoustic Monitoring</div>
+            <div class="connect-sublabel">Cough frequency tracking</div>
+          </div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="pledge-cta">
+      <button class="btn-primary" onclick="goTo('screen-dashboard')" style="margin-top:20px;">Lock In Pledge &amp; Begin</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 3: DASHBOARD ===== -->
+  <div id="screen-dashboard" class="screen">
+    <div class="scrollable">
+      <div class="dash-header">
+        <div>
+          <div class="dash-greeting">Good morning 早上好</div>
+          <div class="dash-name">Wei Zhang 张威</div>
+        </div>
+        <div class="dash-avatar">👤</div>
+      </div>
+
+      <!-- Streak Hero -->
+      <div class="streak-card" style="margin:0 20px;">
+        <div class="streak-badge">🔥 On Streak</div>
+        <div class="streak-days">23</div>
+        <div class="streak-label">smoke-free days</div>
+        <div class="streak-meta">
+          <div class="streak-meta-item">
+            <strong>¥247</strong>
+            unlocked so far
+          </div>
+          <div class="streak-meta-item">
+            <strong>¥1,253</strong>
+            still at stake
+          </div>
+          <div class="streak-meta-item">
+            <strong>7</strong>
+            days to next payout
+          </div>
+        </div>
+      </div>
+
+      <!-- Week view -->
+      <div class="section-title">This Week</div>
+      <div class="week-strip">
+        <div class="week-day clean"><div class="week-dot"></div><span>M</span></div>
+        <div class="week-day clean"><div class="week-dot"></div><span>T</span></div>
+        <div class="week-day clean"><div class="week-dot"></div><span>W</span></div>
+        <div class="week-day clean"><div class="week-dot"></div><span>T</span></div>
+        <div class="week-day clean"><div class="week-dot"></div><span>F</span></div>
+        <div class="week-day today"><div class="week-dot"></div><span>S</span></div>
+        <div class="week-day"><div class="week-dot"></div><span>S</span></div>
+      </div>
+
+      <!-- Verification Status -->
+      <div class="section-title">Verification Status</div>
+      <div class="verify-strip">
+        <div class="verify-chip ok">
+          <div class="verify-chip-icon">💳</div>
+          <div class="verify-chip-label">Spend</div>
+          <div class="verify-chip-status">✓ Clean</div>
+        </div>
+        <div class="verify-chip ok">
+          <div class="verify-chip-icon">❤️</div>
+          <div class="verify-chip-label">Heart Rate</div>
+          <div class="verify-chip-status">↑ Improving</div>
+        </div>
+        <div class="verify-chip warn">
+          <div class="verify-chip-icon">🎤</div>
+          <div class="verify-chip-label">Cough</div>
+          <div class="verify-chip-status">Monitoring</div>
+        </div>
+      </div>
+
+      <!-- Pledge Progress -->
+      <div class="section-title">Pledge Pool</div>
+      <div class="pledge-progress-card">
+        <div class="pledge-progress-header">
+          <div>
+            <div class="pledge-progress-label">Total pledged to you</div>
+          </div>
+          <div>
+            <div class="pledge-progress-amount">¥1,500</div>
+            <div class="pledge-progress-sub">37% earned back</div>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="pledge-breakdown-mini">
+          <div class="pledge-mini-item">
+            <div class="pledge-mini-val">¥500</div>
+            <div class="pledge-mini-lbl">Your stake</div>
+          </div>
+          <div class="pledge-mini-item">
+            <div class="pledge-mini-val">¥500</div>
+            <div class="pledge-mini-lbl">Employer</div>
+          </div>
+          <div class="pledge-mini-item">
+            <div class="pledge-mini-val">¥500</div>
+            <div class="pledge-mini-lbl">Supporters</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Biometrics -->
+      <div class="section-title">Health Progress</div>
+      <div class="biometric-grid">
+        <div class="bio-card">
+          <div class="bio-card-icon">💓</div>
+          <div>
+            <span class="bio-card-val" style="color:#FF8A80;">62</span>
+            <span class="bio-card-unit">bpm</span>
+          </div>
+          <div class="bio-card-label">Resting Heart Rate</div>
+          <div class="bio-card-trend trend-down">↓ 8 bpm since start</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-card-icon">📈</div>
+          <div>
+            <span class="bio-card-val" style="color:var(--jade);">47</span>
+            <span class="bio-card-unit">ms</span>
+          </div>
+          <div class="bio-card-label">HRV (higher = calmer)</div>
+          <div class="bio-card-trend trend-up">↑ +14ms since start</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-card-icon">🫁</div>
+          <div>
+            <span class="bio-card-val" style="color:var(--jade);">98</span>
+            <span class="bio-card-unit">%</span>
+          </div>
+          <div class="bio-card-label">Blood Oxygen SpO₂</div>
+          <div class="bio-card-trend trend-up">↑ +2% since start</div>
+        </div>
+        <div class="bio-card">
+          <div class="bio-card-icon">🎙️</div>
+          <div>
+            <span class="bio-card-val" style="color:var(--gold);">3</span>
+            <span class="bio-card-unit">×/day</span>
+          </div>
+          <div class="bio-card-label">Cough Frequency</div>
+          <div class="bio-card-trend trend-down">↓ −18 from day 1</div>
+        </div>
+      </div>
+
+      <!-- Social Supporters -->
+      <div class="section-title">Your Supporters</div>
+      <div class="supporters-card">
+        <div class="supporters-header">
+          <div class="supporters-title">Cheering you on</div>
+          <div class="supporters-count">12 sponsors</div>
+        </div>
+        <div class="supporter-row">
+          <div class="supporter-avatar" style="background:rgba(255,107,53,0.15);">👩</div>
+          <div class="supporter-info">
+            <div class="supporter-name">Li Mei (Wife)</div>
+            <div class="supporter-msg">"我为你骄傲！Keep going! 💪"</div>
+          </div>
+          <div class="supporter-amount">¥200</div>
+        </div>
+        <div class="supporter-row">
+          <div class="supporter-avatar" style="background:rgba(62,207,142,0.1);">👨‍💼</div>
+          <div class="supporter-info">
+            <div class="supporter-name">Manager Wang</div>
+            <div class="supporter-msg">"Team is rooting for you."</div>
+          </div>
+          <div class="supporter-amount">¥100</div>
+        </div>
+        <div class="supporter-row">
+          <div class="supporter-avatar" style="background:rgba(245,200,66,0.1);">👴</div>
+          <div class="supporter-info">
+            <div class="supporter-name">Father</div>
+            <div class="supporter-msg">"So proud of you, son."</div>
+          </div>
+          <div class="supporter-amount">¥150</div>
+        </div>
+        <div style="text-align:center;margin-top:14px;">
+          <button onclick="goTo('screen-alert')" style="background:rgba(255,75,31,0.1);border:1px solid rgba(255,75,31,0.3);color:var(--ember);border-radius:12px;padding:10px 20px;font-size:13px;cursor:pointer;font-family:'Noto Sans SC',sans-serif;">⚠️ Simulate JITAI Alert</button>
+        </div>
+      </div>
+
+      <div class="scroll-spacer"></div>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav-bar">
+      <div class="nav-item active">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">Home</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-pledge')">
+        <div class="nav-icon">📊</div>
+        <div class="nav-label">Pledge</div>
+      </div>
+      <div class="nav-item" onclick="goTo('screen-success')">
+        <div class="nav-icon">🏆</div>
+        <div class="nav-label">Rewards</div>
+      </div>
+      <div class="nav-item">
+        <div class="nav-icon">👥</div>
+        <div class="nav-label">Social</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 4: JITAI ALERT ===== -->
+  <div id="screen-alert" class="screen" style="justify-content:flex-end;background:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)), url('') center/cover;">
+    <!-- Simulated background showing map/street -->
+    <div style="position:absolute;inset:0;background:linear-gradient(to bottom, #0a1628, #1a2744);opacity:0.95;"></div>
+    <div style="position:absolute;top:30%;left:50%;transform:translateX(-50%);text-align:center;z-index:1;opacity:0.3;">
+      <div style="font-size:60px;margin-bottom:8px;">📍</div>
+      <div style="color:var(--cloud);font-size:13px;">GPS: Near Zhongshan Rd. convenience store</div>
+    </div>
+
+    <div class="alert-sheet">
+      <div class="alert-handle"></div>
+      <div class="alert-inner">
+        <div class="alert-badge">⚡ Vulnerability Detected</div>
+        <div class="alert-headline">Your body is<br><span style="color:var(--alert);">signaling stress.</span></div>
+        <div class="alert-context">
+          <div class="alert-context-item">
+            <div class="alert-context-icon">📍</div>
+            <div style="color:var(--mist);font-size:11px;">You're near</div>
+            <div class="alert-context-val">Convenience Store</div>
+          </div>
+          <div class="alert-context-item">
+            <div class="alert-context-icon">💓</div>
+            <div style="color:var(--mist);font-size:11px;">HRV dropped</div>
+            <div class="alert-context-val">−22ms (stress spike)</div>
+          </div>
+          <div class="alert-context-item">
+            <div class="alert-context-icon">🕐</div>
+            <div style="color:var(--mist);font-size:11px;">Time</div>
+            <div class="alert-context-val">3:47 PM</div>
+          </div>
+        </div>
+        <div class="alert-stakes">
+          <div class="alert-stakes-label">If you buy cigarettes now, you forfeit:</div>
+          <div class="stakes-row">
+            <div class="stakes-from">💳 Your own pledge</div>
+            <div class="stakes-amount">¥500</div>
+          </div>
+          <div class="stakes-row">
+            <div class="stakes-from">🏢 Employer match</div>
+            <div class="stakes-amount">¥500</div>
+          </div>
+          <div class="stakes-row">
+            <div class="stakes-from">👩 Sponsored by Li Mei, Father + 10 others</div>
+            <div class="stakes-amount">¥500</div>
+          </div>
+          <div class="stakes-row" style="border-top:1px solid rgba(255,75,31,0.2);padding-top:10px;margin-top:4px;">
+            <div class="stakes-total">Total forfeited</div>
+            <div class="stakes-total-amount">¥1,500</div>
+          </div>
+        </div>
+      </div>
+      <div class="alert-ctas">
+        <button class="btn-calm" onclick="goTo('screen-dashboard')">✓ I'm staying strong — Walk away</button>
+        <button class="btn-breathing" onclick="goTo('screen-dashboard')">🧘 Start 60-sec breathing exercise</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 5: SUCCESS / PAYOUT ===== -->
+  <div id="screen-success" class="screen">
+    <div style="padding:16px 24px 12px;display:flex;align-items:center;gap:12px;">
+      <div class="back-btn" onclick="goTo('screen-dashboard')">←</div>
+      <div class="screen-title">Weekly Payout</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 32px;">
+      <div class="success-ring">
+        <div class="success-icon-inner">🏆</div>
+      </div>
+
+      <div class="success-title">Week 4 Complete!</div>
+      <div class="success-sub">You've maintained a perfect record — zero tobacco transactions, heart rate improvements confirmed. Your weekly reward is unlocked.</div>
+
+      <div class="payout-card">
+        <div class="payout-label">Unlocking this week</div>
+        <div class="payout-amount">¥87</div>
+        <div class="payout-sub">Transferred to WeChat Pay</div>
+        <div style="height:1px;background:rgba(62,207,142,0.2);margin:16px 0;"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--cloud);">
+          <span>Total earned to date</span>
+          <span style="color:var(--jade);font-family:'Space Mono',monospace;">¥247 / ¥1,500</span>
+        </div>
+        <div class="progress-track" style="margin-top:10px;">
+          <div class="progress-fill" style="width:16.5%;"></div>
+        </div>
+        <div class="payout-streak">🔥 28-day streak maintained</div>
+      </div>
+
+      <div style="width:100%;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:18px;margin-bottom:24px;">
+        <div style="font-size:13px;color:var(--mist);margin-bottom:12px;">Body improvements since you quit</div>
+        <div style="font-size:14px;color:var(--white);line-height:1.8;">
+          ❤️ Heart rate: <strong style="color:var(--jade);">62 bpm</strong> (was 78)<br>
+          📈 HRV: <strong style="color:var(--jade);">47ms</strong> (was 33ms)<br>
+          🫁 Blood oxygen: <strong style="color:var(--jade);">98%</strong> (was 96%)<br>
+          🎙️ Daily coughs: <strong style="color:var(--jade);">3×</strong> (was 21×)
+        </div>
+      </div>
+
+      <button class="btn-primary success-cta" onclick="goTo('screen-dashboard')">Back to Dashboard</button>
+    </div>
+  </div>
+
+</div><!-- end phone-shell -->
+
+<script>
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function updatePledge(val) {
+    const v = parseInt(val);
+    document.getElementById('pledge-display').textContent = v.toLocaleString();
+    document.getElementById('f-you').textContent = '¥' + v.toLocaleString();
+    document.getElementById('f-employer').textContent = '¥' + v.toLocaleString();
+    document.getElementById('f-social').textContent = '¥' + v.toLocaleString();
+    document.getElementById('f-total').textContent = '¥' + (v * 3).toLocaleString();
+    // update slider gradient
+    const pct = ((v - 100) / (2000 - 100)) * 100;
+    document.getElementById('pledge-slider').style.background =
+      `linear-gradient(to right, var(--ember) 0%, var(--ember) ${pct}%, var(--haze) ${pct}%)`;
+  }
+
+  function setPledge(val, el) {
+    document.getElementById('pledge-slider').value = val;
+    updatePledge(val);
+    document.querySelectorAll('.preset-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+</body>
+</html>
