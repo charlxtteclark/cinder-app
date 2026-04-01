@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Cinder</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ember: #FF4B1F;
+  --ember-lo: rgba(255,75,31,0.12);
+  --ash: #141416;
+  --smoke: #1E1E22;
+  --haze: #2C2C32;
+  --mist: #64646E;
+  --cloud: #9898A6;
+  --fog: #C4C4D0;
+  --white: #F2F1EF;
+  --jade: #2ECC8A;
+  --jade-lo: rgba(46,204,138,0.1);
+  --gold: #F0C040;
+  --gold-lo: rgba(240,192,64,0.1);
+  --alert: #FF6B35;
+  --blue: #4A9EFF;
+  --card: #1C1C20;
+  --border: rgba(255,255,255,0.07);
+  --radius: 20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;align-items:flex-start;padding:24px 16px 48px;font-family:'Noto Sans SC',sans-serif;color:var(--white)}
+
+.shell{
+  width:390px;min-height:844px;
+  background:var(--ash);
+  border-radius:48px;
+  border:1.5px solid rgba(255,255,255,0.1);
+  overflow:hidden;position:relative;
+  box-shadow:0 60px 120px rgba(0,0,0,0.9),0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 0;font-family:'Space Mono',monospace;font-size:11px;color:var(--mist)}
+
+.scr{display:none;flex-direction:column;min-height:820px;animation:fadeUp .3s ease both}
+.scr.on{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.body{flex:1;overflow-y:auto;padding-bottom:80px}
+.body::-webkit-scrollbar{display:none}
+
+.nav{position:sticky;bottom:0;background:rgba(20,20,22,0.96);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:10px 0 24px;display:flex;justify-content:space-around;z-index:10}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 18px;border-radius:12px}
+.ni .ico{font-size:22px;color:var(--mist);transition:color .15s}
+.ni .lbl{font-size:10px;color:var(--mist);font-weight:500;transition:color .15s}
+.ni.on .ico,.ni.on .lbl{color:var(--ember)}
+
+.hdr{display:flex;align-items:center;gap:12px;padding:16px 22px 10px}
+.back{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;flex-shrink:0;transition:background .15s}
+.back:active{background:var(--haze)}
+.htitle{font-size:17px;font-weight:700}
+
+.btn{width:100%;border:none;border-radius:16px;padding:17px;font-size:15px;font-family:'Noto Sans SC',sans-serif;font-weight:700;cursor:pointer;transition:transform .15s;letter-spacing:.2px}
+.btn:active{transform:scale(.97)}
+.btn-fire{background:var(--ember);color:#fff;box-shadow:0 8px 28px rgba(255,75,31,.35)}
+.btn-jade{background:var(--jade);color:var(--ash);box-shadow:0 8px 28px rgba(46,204,138,.3)}
+.btn-ghost{background:transparent;color:var(--cloud);border:1px solid var(--haze)}
+.btn-dark{background:var(--card);color:var(--white);border:1px solid var(--border)}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.sec-lbl{padding:18px 22px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--mist)}
+
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.tag-fire{background:var(--ember-lo);color:var(--ember);border:1px solid rgba(255,75,31,.25)}
+.tag-jade{background:var(--jade-lo);color:var(--jade);border:1px solid rgba(46,204,138,.25)}
+.tag-gold{background:var(--gold-lo);color:var(--gold);border:1px solid rgba(240,192,64,.25)}
+.tag-mist{background:rgba(100,100,110,.1);color:var(--cloud);border:1px solid rgba(100,100,110,.2)}
+
+.mono{font-family:'Space Mono',monospace}
+.serif{font-family:'Fraunces',serif}
+
+.tog{width:44px;height:26px;background:var(--haze);border-radius:13px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--jade)}
+.tog::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .2s;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.tog.on::after{transform:translateX(18px)}
+
+.pbar{height:7px;background:var(--haze);border-radius:4px;overflow:hidden}
+.pfill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--jade),#5DF0A8);position:relative;transition:width .6s ease}
+.pfill::after{content:'';position:absolute;right:-1px;top:-2px;width:11px;height:11px;background:var(--jade);border-radius:50%;border:2px solid var(--ash)}
+
+.sp{height:16px}
+
+/* ===================== LOGIN ===================== */
+#s-login{
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(255,75,31,.2) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(255,75,31,.08) 0%, transparent 50%),
+    var(--ash);
+  justify-content:space-between;
+}
+.login-top{padding:56px 32px 0}
+.logo{width:56px;height:56px;background:var(--ember);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:28px;box-shadow:0 10px 40px rgba(255,75,31,.45);animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 10px 40px rgba(255,75,31,.45)}50%{box-shadow:0 10px 60px rgba(255,75,31,.75)}}
+.login-h{font-family:'Fraunces',serif;font-size:46px;line-height:1.05;margin-bottom:14px;letter-spacing:-.5px}
+.login-h span{color:var(--ember)}
+.login-sub{color:var(--cloud);font-size:14px;line-height:1.65;font-weight:300}
+
+.login-cards{display:flex;flex-direction:column;gap:12px;padding:32px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:22px;padding:22px 20px;cursor:pointer;transition:border-color .2s,transform .15s;display:flex;align-items:center;gap:16px}
+.login-card:active{transform:scale(.98)}
+.login-card.fire:hover{border-color:rgba(255,75,31,.4)}
+.login-card.jade:hover{border-color:rgba(46,204,138,.4)}
+.lc-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.lc-icon.fire{background:var(--ember-lo)}
+.lc-icon.jade{background:var(--jade-lo)}
+.lc-name{font-size:16px;font-weight:700;margin-bottom:3px}
+.lc-desc{font-size:12px;color:var(--mist);line-height:1.4}
+.lc-arr{margin-left:auto;color:var(--mist);font-size:18px;flex-shrink:0}
+
+.login-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 32px 40px}
+.lst{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px}
+.lst .n{font-family:'Fraunces',serif;font-size:26px;color:var(--ember)}
+.lst .l{font-size:11px;color:var(--mist);margin-top:2px;line-height:1.3}
+
+/* ===================== SMOKER: PLEDGE ===================== */
+#s-pledge{overflow-y:auto}
+.pledge-hero{margin:8px 20px;background:linear-gradient(135deg,#1E1E24,#26262E);border:1px solid var(--border);border-radius:24px;padding:26px 22px;text-align:center}
+.ph-lbl{color:var(--mist);font-size:13px;margin-bottom:10px}
+.ph-amt{font-family:'Fraunces',serif;font-size:68px;color:var(--ember);line-height:1}
+.ph-cur{color:var(--mist);font-size:14px;margin-top:4px}
+.pledge-slider{width:100%;-webkit-appearance:none;height:6px;border-radius:3px;outline:none;cursor:pointer;margin-top:18px;background:linear-gradient(to right,var(--ember) 33%,var(--haze) 33%)}
+.pledge-slider::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--ember);box-shadow:0 2px 10px rgba(0,0,0,.4);cursor:pointer}
+.presets{display:flex;gap:8px;padding:10px 20px 0;justify-content:center}
+.pre{padding:7px 16px;border-radius:100px;border:1px solid var(--haze);background:transparent;color:var(--cloud);font-size:13px;cursor:pointer;font-family:'Noto Sans SC',sans-serif;transition:all .15s}
+.pre.on{background:var(--ember-lo);border-color:var(--ember);color:var(--ember)}
+
+.fund-table{margin:16px 20px 0;border-radius:20px;overflow:hidden;border:1px solid var(--border)}
+.frow{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--card);border-bottom:1px solid var(--border)}
+.frow:last-child{border-bottom:none;background:rgba(46,204,138,.05)}
+.frow-l{display:flex;align-items:center;gap:10px;font-size:13px}
+.frow-ico{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.frow-sub{font-size:11px;color:var(--mist);margin-top:1px}
+.frow-amt{font-family:'Space Mono',monospace;font-size:14px;color:var(--jade);font-weight:700}
+.frow-total .frow-l{color:var(--jade);font-weight:700;font-size:15px}
+.frow-total .frow-amt{font-size:18px}
+
+.connect-wrap{padding:16px 20px 0}
+.crow{display:flex;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 16px;margin-bottom:10px}
+.crow-l{display:flex;align-items:center;gap:12px;font-size:13px}
+.crow-sub{font-size:11px;color:var(--mist);margin-top:1px}
+
+/* ===================== SMOKER: DASHBOARD ===================== */
+#s-dash{overflow:hidden}
+.dash-hdr{padding:14px 22px;display:flex;justify-content:space-between;align-items:center}
+.dh-greet{font-size:12px;color:var(--mist)}
+.dh-name{font-size:20px;font-weight:700}
+.dh-av{width:40px;height:40px;background:linear-gradient(135deg,var(--ember),var(--gold));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+
+.streak-hero{margin:0 20px;background:linear-gradient(135deg,#C43A17,#8B2310,#4A0F06);border-radius:28px;padding:26px 22px;position:relative;overflow:hidden;box-shadow:0 16px 48px rgba(255,75,31,.3)}
+.streak-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,.05);border-radius:50%}
+.sh-days{font-family:'Fraunces',serif;font-size:80px;line-height:1;margin-bottom:2px}
+.sh-lbl{font-size:16px;opacity:.85;margin-bottom:20px}
+.sh-meta{display:flex;gap:24px;position:relative;z-index:1}
+.sh-m{font-size:12px;opacity:.75}
+.sh-m strong{display:block;font-size:18px;font-family:'Space Mono',monospace;opacity:1}
+
+.week-row{display:flex;gap:6px;padding:0 20px}
+.wd{flex:1;height:58px;border-radius:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;color:var(--mist);border:1px solid var(--border);background:var(--card)}
+.wd.clean{border-color:rgba(46,204,138,.3);background:rgba(46,204,138,.07)}
+.wd.clean .wdot{background:var(--jade)}
+.wd.today{border-color:var(--ember);background:rgba(255,75,31,.07)}
+.wd.today .wdot{background:var(--ember)}
+.wdot{width:7px;height:7px;border-radius:50%;background:var(--haze)}
+
+.verify-row{display:flex;gap:10px;padding:0 20px}
+.vchip{flex:1;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:13px 10px;text-align:center}
+.vchip.ok{border-color:rgba(46,204,138,.3);background:rgba(46,204,138,.05)}
+.vchip.warn{border-color:rgba(240,192,64,.3);background:rgba(240,192,64,.05)}
+.vchip .vi{font-size:19px;margin-bottom:3px}
+.vchip .vl{font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:.5px}
+.vchip .vs{font-size:11px;font-weight:700;margin-top:2px}
+.vchip.ok .vs{color:var(--jade)}
+.vchip.warn .vs{color:var(--gold)}
+
+.pledge-prog{margin:0 20px;padding:20px;border-radius:22px}
+.pp-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.pp-lbl{font-size:13px;color:var(--cloud)}
+.pp-amt{font-family:'Fraunces',serif;font-size:30px;color:var(--jade)}
+.pp-sub{font-size:12px;color:var(--mist);text-align:right}
+.pp-mini{display:flex;gap:8px;margin-top:14px}
+.ppm{flex:1;text-align:center;background:rgba(255,255,255,.03);border-radius:12px;padding:10px 6px}
+.ppm-v{font-family:'Space Mono',monospace;font-size:13px}
+.ppm-l{font-size:10px;color:var(--mist);margin-top:3px}
+
+.bio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.bc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:16px 14px}
+.bc-ico{font-size:20px;margin-bottom:7px}
+.bc-val{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;line-height:1}
+.bc-unit{font-size:10px;color:var(--mist);margin-left:2px}
+.bc-lbl{font-size:10px;color:var(--mist);margin-top:3px}
+.bc-tr{display:inline-flex;align-items:center;gap:3px;font-size:10px;margin-top:6px;padding:2px 7px;border-radius:100px}
+.tr-g{background:rgba(46,204,138,.1);color:var(--jade)}
+.tr-y{background:rgba(240,192,64,.1);color:var(--gold)}
+
+.team-card{margin:0 20px;padding:20px;border-radius:22px}
+.tc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tc-title{font-size:15px;font-weight:700}
+.team-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.team-row:last-child{border-bottom:none;padding-bottom:0}
+.tm-rank{font-family:'Space Mono',monospace;font-size:13px;color:var(--mist);width:18px}
+.tm-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tm-info{flex:1}
+.tm-name{font-size:13px;font-weight:500}
+.tm-prog{font-size:11px;color:var(--mist);margin-top:2px}
+.tm-days{font-family:'Space Mono',monospace;font-size:12px;color:var(--jade)}
+
+.sup-card{margin:0 20px;padding:20px;border-radius:22px}
+.sup-row{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.sup-row:last-child{border-bottom:none;padding-bottom:0}
+.sup-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sup-info{flex:1}
+.sup-name{font-size:13px;font-weight:500}
+.sup-msg{font-size:11px;color:var(--mist);margin-top:1px}
+.sup-amt{font-family:'Space Mono',monospace;font-size:13px;color:var(--jade)}
+
+/* ===================== JITAI ===================== */
+#s-alert{justify-content:flex-end;position:relative;min-height:844px}
+.alert-bg{position:absolute;inset:0;background:linear-gradient(to bottom,#060a14,#0e1525);z-index:0}
+.alert-map-hint{position:absolute;top:28%;left:50%;transform:translateX(-50%);text-align:center;z-index:1;opacity:.25}
+.alert-sheet{position:relative;background:var(--smoke);border-radius:32px 32px 0 0;z-index:10;animation:slideUp .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.a-handle{width:36px;height:4px;background:var(--haze);border-radius:2px;margin:12px auto 0}
+.a-inner{padding:22px 22px 0}
+.a-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,107,53,.12);border:1px solid rgba(255,107,53,.3);border-radius:11px;padding:5px 13px;font-size:11px;color:var(--alert);font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:18px}
+.a-head{font-family:'Fraunces',serif;font-size:32px;line-height:1.15;margin-bottom:14px}
+.a-ctx{display:flex;gap:10px;margin-bottom:18px}
+.a-ctx-item{flex:1;background:rgba(255,255,255,.04);border-radius:13px;padding:11px;font-size:11px;color:var(--cloud)}
+.a-ctx-ico{font-size:17px;margin-bottom:3px}
+.a-ctx-val{font-weight:700;font-size:13px;color:var(--white);margin-top:2px}
+.a-stakes{background:rgba(255,75,31,.07);border:1px solid rgba(255,75,31,.2);border-radius:17px;padding:16px;margin-bottom:18px}
+.a-s-lbl{font-size:11px;color:var(--mist);margin-bottom:9px;text-transform:uppercase;letter-spacing:.5px}
+.srow{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:13px}
+.srow:last-child{margin-bottom:0;border-top:1px solid rgba(255,75,31,.15);padding-top:9px;margin-top:3px}
+.srow-f{color:var(--cloud);display:flex;align-items:center;gap:6px}
+.srow-a{font-family:'Space Mono',monospace;font-size:13px;color:var(--ember)}
+.srow-total{font-weight:700;font-size:14px}
+.srow-total-a{font-size:17px}
+.a-btns{display:flex;flex-direction:column;gap:10px;padding:0 22px 40px}
+
+/* ===================== COTININE ===================== */
+#s-cotinine{overflow-y:auto}
+.cot-hero{margin:8px 20px 0;background:linear-gradient(135deg,#0f1f14,#1a2e1e);border:1px solid rgba(46,204,138,.15);border-radius:24px;padding:24px 20px;text-align:center}
+.cot-icon{font-size:56px;margin-bottom:16px}
+.cot-title{font-family:'Fraunces',serif;font-size:28px;margin-bottom:8px}
+.cot-sub{color:var(--cloud);font-size:13px;line-height:1.65}
+.cot-steps{margin:16px 20px 0}
+.cot-step{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:10px}
+.cs-num{width:28px;height:28px;border-radius:50%;background:var(--ember-lo);color:var(--ember);border:1px solid rgba(255,75,31,.3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;margin-top:1px}
+.cs-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.cs-desc{font-size:12px;color:var(--mist);line-height:1.5}
+.cot-status{margin:16px 20px 0;background:var(--jade-lo);border:1px solid rgba(46,204,138,.25);border-radius:20px;padding:18px}
+.cot-s-title{font-size:14px;font-weight:700;color:var(--jade);margin-bottom:10px}
+.cot-s-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px;border-bottom:1px solid rgba(46,204,138,.1)}
+.cot-s-row:last-child{border-bottom:none}
+.cot-s-lbl{color:var(--cloud)}
+.cot-s-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--jade)}
+
+/* ===================== GIFTS ===================== */
+#s-gifts{overflow-y:auto}
+.gift-hero{margin:8px 20px 0;background:linear-gradient(135deg,#1a1608,#2a2210);border:1px solid rgba(240,192,64,.15);border-radius:24px;padding:22px 20px;text-align:center}
+.gift-unlocked{font-family:'Fraunces',serif;font-size:52px;color:var(--gold);line-height:1}
+.gift-lbl{color:var(--mist);font-size:13px;margin-top:4px;margin-bottom:6px}
+.gift-sub{font-size:12px;color:var(--cloud)}
+.gift-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px 14px;cursor:pointer;transition:border-color .2s,transform .15s}
+.gcard:active{transform:scale(.97)}
+.gcard.sel{border-color:var(--gold);background:rgba(240,192,64,.05)}
+.gc-ico{font-size:32px;margin-bottom:10px}
+.gc-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.gc-desc{font-size:11px;color:var(--mist);line-height:1.4}
+.gc-amt{font-family:'Space Mono',monospace;font-size:12px;color:var(--gold);margin-top:8px}
+
+/* ===================== EMPLOYER DASH ===================== */
+#s-emp-dash{overflow:hidden}
+.emp-hdr{padding:14px 22px 10px;display:flex;justify-content:space-between;align-items:center}
+.eh-badge{display:inline-flex;align-items:center;gap:5px;background:var(--jade-lo);border:1px solid rgba(46,204,138,.2);border-radius:8px;padding:3px 9px;font-size:10px;color:var(--jade);font-weight:700;margin-bottom:4px}
+.eh-company{font-size:19px;font-weight:700}
+.eh-role{font-size:11px;color:var(--mist)}
+.eh-logo{width:44px;height:44px;background:linear-gradient(135deg,var(--jade),#7EFFC5);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px}
+
+.kpi-strip{display:flex;gap:10px;padding:0 20px;overflow-x:auto;padding-bottom:4px}
+.kpi-strip::-webkit-scrollbar{display:none}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px 18px;flex-shrink:0;min-width:130px}
+.kpi-ico{font-size:18px;margin-bottom:6px}
+.kpi-val{font-family:'Fraunces',serif;font-size:32px;line-height:1}
+.kpi-lbl{font-size:11px;color:var(--mist);margin-top:3px}
+.kpi-delta{font-size:11px;margin-top:5px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:100px}
+.d-g{background:var(--jade-lo);color:var(--jade)}
+.d-b{background:rgba(74,158,255,.1);color:var(--blue)}
+
+.comp-card{margin:0 20px;padding:20px;border-radius:22px}
+.comp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.comp-title{font-size:15px;font-weight:700}
+.comp-sub{font-size:11px;color:var(--mist);margin-bottom:14px}
+.dept-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.dept-row:last-child{border-bottom:none;padding-bottom:0}
+.dr-rank{font-family:'Space Mono',monospace;font-size:13px;color:var(--mist);width:16px;flex-shrink:0}
+.dr-info{flex:1}
+.dr-name{font-size:13px;font-weight:600}
+.dr-prog-wrap{display:flex;align-items:center;gap:8px;margin-top:5px}
+.dr-pbar{flex:1;height:5px;background:var(--haze);border-radius:3px;overflow:hidden}
+.dr-pfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--jade),#7EFFC5)}
+.dr-pct{font-size:11px;font-family:'Space Mono',monospace;color:var(--jade);width:28px;text-align:right}
+.dr-bonus{font-family:'Space Mono',monospace;font-size:11px;color:var(--gold);flex-shrink:0}
+
+.cot-table{margin:0 20px}
+.ct-row{display:flex;align-items:center;gap:12px;padding:11px 16px;background:var(--card);border-bottom:1px solid var(--border)}
+.ct-row:first-child{border-radius:16px 16px 0 0}
+.ct-row:last-child{border-bottom:none;border-radius:0 0 16px 16px}
+.ct-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.ct-name{flex:1;font-size:13px}
+.ct-id{font-size:11px;color:var(--mist);margin-top:1px;font-family:'Space Mono',monospace}
+.ct-status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:100px}
+.cts-pass{background:var(--jade-lo);color:var(--jade)}
+.cts-pend{background:var(--gold-lo);color:var(--gold)}
+.cts-sent{background:rgba(74,158,255,.1);color:var(--blue)}
+
+.roi-card{margin:0 20px;background:linear-gradient(135deg,#0a1a10,#0f2416);border:1px solid rgba(46,204,138,.2);border-radius:22px;padding:20px}
+.roi-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.roi-title{font-size:15px;font-weight:700}
+.roi-period{font-size:11px;color:var(--mist)}
+.roi-big{font-family:'Fraunces',serif;font-size:52px;color:var(--jade);line-height:1;margin-bottom:4px}
+.roi-sub{font-size:12px;color:var(--mist)}
+.roi-rows{margin-top:16px}
+.roi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid rgba(46,204,138,.08);font-size:13px}
+.roi-row-l{color:var(--cloud)}
+.roi-row-r{font-family:'Space Mono',monospace;font-size:12px}
+.roi-row-r.g{color:var(--jade)}
+.roi-row-r.r{color:var(--ember)}
+
+.esg-card{margin:0 20px;padding:20px;border-radius:22px}
+.esg-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.esg-title{font-size:15px;font-weight:700}
+.esg-badge{display:inline-flex;align-items:center;gap:5px;background:var(--jade-lo);color:var(--jade);border:1px solid rgba(46,204,138,.2);border-radius:100px;font-size:11px;font-weight:700;padding:3px 10px}
+.esg-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.esg-row:last-child{border-bottom:none;padding-bottom:0}
+.esg-icon{font-size:18px;width:36px;height:36px;background:var(--haze);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.esg-metric{flex:1;font-size:13px}
+.esg-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--jade)}
+.esg-sub{font-size:10px;color:var(--mist);margin-top:1px}
+
+/* ===================== ENROLL ===================== */
+#s-enroll{overflow-y:auto}
+.enroll-form{padding:0 20px}
+.ef-field{margin-bottom:14px}
+.ef-lbl{font-size:12px;color:var(--mist);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;display:block}
+.ef-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--white);font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none;transition:border-color .2s}
+.ef-input:focus{border-color:rgba(46,204,138,.4)}
+.ef-select{width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--white);font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none;-webkit-appearance:none}
+.ef-row{display:flex;gap:10px}
+.ef-row .ef-field{flex:1}
+.program-preview{margin:0 20px 20px;background:var(--jade-lo);border:1px solid rgba(46,204,138,.2);border-radius:18px;padding:16px}
+.pp-title{font-size:13px;color:var(--jade);font-weight:700;margin-bottom:10px}
+.pp-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(46,204,138,.08)}
+.pp-row:last-child{border-bottom:none}
+.pp-k{color:var(--cloud)}
+.pp-v{font-family:'Space Mono',monospace;font-size:12px;color:var(--jade)}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="sbar"><span>9:41</span><span>●●● WiFi 🔋</span></div>
+
+<!-- LOGIN -->
+<div id="s-login" class="scr on">
+  <div class="login-top">
+    <div class="logo">🔥</div>
+    <div class="login-h">Quit.<br>Get paid<br><span>to stay quit.</span></div>
+    <div class="login-sub">China's first verified workplace cessation platform — backed by Cochrane evidence, built for Healthy China 2030 compliance.</div>
+  </div>
+  <div class="login-cards">
+    <div class="login-card fire" onclick="goTo('s-pledge')">
+      <div class="lc-icon fire">🚬</div>
+      <div>
+        <div class="lc-name">I want to quit smoking</div>
+        <div class="lc-desc">Set a pledge, track progress, earn your reward back</div>
+      </div>
+      <div class="lc-arr">›</div>
+    </div>
+    <div class="login-card jade" onclick="goTo('s-emp-dash')">
+      <div class="lc-icon jade">🏢</div>
+      <div>
+        <div class="lc-name">I'm an employer / HR</div>
+        <div class="lc-desc">Manage programs, verify quitters, pull ESG reports</div>
+      </div>
+      <div class="lc-arr">›</div>
+    </div>
+  </div>
+  <div class="login-stats">
+    <div class="lst"><div class="n">300M</div><div class="l">Smokers in China</div></div>
+    <div class="lst"><div class="n">+49%</div><div class="l">Quit rate lift with guaranteed incentives (Cochrane)</div></div>
+    <div class="lst"><div class="n">10×</div><div class="l">Employer ROI per verified quitter</div></div>
+    <div class="lst"><div class="n">Apr '26</div><div class="l">SOE ESG disclosure deadline</div></div>
+  </div>
+</div>
+
+<!-- SMOKER: PLEDGE SETUP -->
+<div id="s-pledge" class="scr">
+  <div class="hdr"><div class="back" onclick="goTo('s-login')">←</div><div class="htitle">Set Your Pledge</div></div>
+  <div style="overflow-y:auto;flex:1;padding-bottom:24px">
+    <div class="pledge-hero">
+      <div class="ph-lbl">Your personal stake</div>
+      <div><span class="ph-amt" id="pd">500</span><span style="font-family:'Fraunces',serif;font-size:36px;color:var(--ember)"> ¥</span></div>
+      <div class="ph-cur">Returned in full when you pass your Month 6 cotinine test.</div>
+      <input type="range" class="pledge-slider" id="pslider" min="100" max="2000" step="100" value="500" oninput="updPledge(this.value)">
+    </div>
+    <div class="presets">
+      <button class="pre" onclick="setPledge(300,this)">¥300</button>
+      <button class="pre on" onclick="setPledge(500,this)">¥500</button>
+      <button class="pre" onclick="setPledge(1000,this)">¥1,000</button>
+      <button class="pre" onclick="setPledge(2000,this)">¥2,000</button>
+    </div>
+    <div class="fund-table">
+      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--ember-lo)">💰</div><div><div>Your pledge</div><div class="frow-sub">Returned on verified success</div></div></div><div class="frow-amt" id="f-you">¥500</div></div>
+      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🏢</div><div><div>Employer bonus</div><div class="frow-sub">Paid on cotinine confirmation</div></div></div><div class="frow-amt" id="f-emp">¥500</div></div>
+      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--gold-lo)">👨‍👩‍👧</div><div><div>Friends &amp; family</div><div class="frow-sub">Crowdfunded via WeChat Moments</div></div></div><div class="frow-amt" id="f-soc">¥500</div></div>
+      <div class="frow frow-total"><div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🎯</div><div style="font-size:15px;font-weight:700">Total you can earn</div></div><div class="frow-amt" id="f-tot" style="font-size:19px">¥1,500</div></div>
+    </div>
+    <div class="sec-lbl">Connect Devices</div>
+    <div class="connect-wrap">
+      <div class="crow"><div class="crow-l"><span style="font-size:20px">⌚</span><div><div>Huawei Health / Apple Watch</div><div class="crow-sub">HRV · Heart Rate · SpO₂ · Steps</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="crow"><div class="crow-l"><span style="font-size:20px">💳</span><div><div>WeChat Pay</div><div class="crow-sub">Tobacco merchant transaction monitoring</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="crow"><div class="crow-l"><span style="font-size:20px">🎤</span><div><div>Acoustic Monitoring</div><div class="crow-sub">Cough frequency via microphone</div></div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div style="padding:20px"><button class="btn btn-fire" onclick="goTo('s-dash')">Lock In Pledge &amp; Begin →</button></div>
+  </div>
+</div>
+
+<!-- SMOKER: DASHBOARD -->
+<div id="s-dash" class="scr">
+  <div class="body">
+    <div class="dash-hdr"><div><div class="dh-greet">早上好 Good morning</div><div class="dh-name">Wei Zhang 张威</div></div><div class="dh-av">👤</div></div>
+    <div class="streak-hero">
+      <div class="tag tag-fire" style="margin-bottom:14px">🔥 On Streak</div>
+      <div class="sh-days">23</div>
+      <div class="sh-lbl">smoke-free days</div>
+      <div class="sh-meta">
+        <div class="sh-m"><strong>¥247</strong>unlocked</div>
+        <div class="sh-m"><strong>¥1,253</strong>at stake</div>
+        <div class="sh-m"><strong>7d</strong>to payout</div>
+      </div>
+    </div>
+    <div class="sec-lbl">This Week</div>
+    <div class="week-row">
+      <div class="wd clean"><div class="wdot"></div><span>M</span></div>
+      <div class="wd clean"><div class="wdot"></div><span>T</span></div>
+      <div class="wd clean"><div class="wdot"></div><span>W</span></div>
+      <div class="wd clean"><div class="wdot"></div><span>T</span></div>
+      <div class="wd clean"><div class="wdot"></div><span>F</span></div>
+      <div class="wd today"><div class="wdot"></div><span>S</span></div>
+      <div class="wd"><div class="wdot"></div><span>S</span></div>
+    </div>
+    <div class="sec-lbl">Live Verification</div>
+    <div class="verify-row">
+      <div class="vchip ok"><div class="vi">💳</div><div class="vl">Spend</div><div class="vs">✓ Clean</div></div>
+      <div class="vchip ok"><div class="vi">❤️</div><div class="vl">HRV</div><div class="vs">↑ Better</div></div>
+      <div class="vchip warn"><div class="vi">🎤</div><div class="vl">Cough</div><div class="vs">Tracking</div></div>
+      <div class="vchip ok"><div class="vi">🧪</div><div class="vl">Cotinine</div><div class="vs">✓ Wk 12</div></div>
+    </div>
+    <div class="sec-lbl">Pledge Pool</div>
+    <div class="pledge-prog card">
+      <div class="pp-hdr"><div><div class="pp-lbl">Total pledged to you</div></div><div><div class="pp-amt">¥1,500</div><div class="pp-sub">37% earned back</div></div></div>
+      <div class="pbar"><div class="pfill" style="width:37%"></div></div>
+      <div class="pp-mini">
+        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Your stake</div></div>
+        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Employer</div></div>
+        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Friends</div></div>
+      </div>
+    </div>
+    <div class="sec-lbl">Health Progress</div>
+    <div class="bio-grid">
+      <div class="bc"><div class="bc-ico">💓</div><div><span class="bc-val" style="color:#FF8A80">62</span><span class="bc-unit">bpm</span></div><div class="bc-lbl">Resting Heart Rate</div><div class="bc-tr tr-g">↓ −16 bpm</div></div>
+      <div class="bc"><div class="bc-ico">📈</div><div><span class="bc-val" style="color:var(--jade)">47</span><span class="bc-unit">ms</span></div><div class="bc-lbl">HRV (higher = better)</div><div class="bc-tr tr-g">↑ +14ms</div></div>
+      <div class="bc"><div class="bc-ico">🫁</div><div><span class="bc-val" style="color:var(--jade)">98</span><span class="bc-unit">%</span></div><div class="bc-lbl">Blood Oxygen SpO₂</div><div class="bc-tr tr-g">↑ +2%</div></div>
+      <div class="bc"><div class="bc-ico">🎙️</div><div><span class="bc-val" style="color:var(--gold)">3</span><span class="bc-unit">×/day</span></div><div class="bc-lbl">Cough Frequency</div><div class="bc-tr tr-g">↓ −18/day</div></div>
+    </div>
+    <div class="sec-lbl">Team Competition — 工程部</div>
+    <div class="team-card card">
+      <div class="tc-hdr"><div class="tc-title">Engineering Dept.</div><div class="tag tag-jade">🏆 Rank #1</div></div>
+      <div class="team-row"><div class="tm-rank">1</div><div class="tm-av" style="background:var(--ember-lo)">👤</div><div class="tm-info"><div class="tm-name">You (Wei Zhang)</div><div class="tm-prog">Day 23 · All checks passed</div></div><div class="tm-days">23d</div></div>
+      <div class="team-row"><div class="tm-rank">2</div><div class="tm-av" style="background:var(--jade-lo)">👨</div><div class="tm-info"><div class="tm-name">Liu Fang</div><div class="tm-prog">Day 19 · Spend clean</div></div><div class="tm-days">19d</div></div>
+      <div class="team-row"><div class="tm-rank">3</div><div class="tm-av" style="background:rgba(74,158,255,.1)">👩</div><div class="tm-info"><div class="tm-name">Chen Bo</div><div class="tm-prog">Day 15 · On track</div></div><div class="tm-days">15d</div></div>
+      <div class="team-row"><div class="tm-rank">4</div><div class="tm-av" style="background:var(--gold-lo)">👴</div><div class="tm-info"><div class="tm-name">Wang Lei</div><div class="tm-prog">Day 8 · Needs support</div></div><div class="tm-days">8d</div></div>
+      <div style="margin-top:12px;padding:10px;background:var(--jade-lo);border-radius:12px;font-size:12px;color:var(--jade);border:1px solid rgba(46,204,138,.2)">🏆 5+ teammates quit = <strong>1.5× bonus multiplier</strong> for the whole team!</div>
+    </div>
+    <div class="sec-lbl">Your Supporters</div>
+    <div class="sup-card card">
+      <div class="tc-hdr"><div class="tc-title">Cheering you on</div><div class="tag tag-fire">12 sponsors</div></div>
+      <div class="sup-row"><div class="sup-av" style="background:rgba(255,107,53,.15)">👩</div><div class="sup-info"><div class="sup-name">Li Mei (Wife)</div><div class="sup-msg">"我为你骄傲！Keep going! 💪"</div></div><div class="sup-amt">¥200</div></div>
+      <div class="sup-row"><div class="sup-av" style="background:var(--jade-lo)">👨‍💼</div><div class="sup-info"><div class="sup-name">Manager Wang</div><div class="sup-msg">"The whole team is rooting for you."</div></div><div class="sup-amt">¥100</div></div>
+      <div class="sup-row"><div class="sup-av" style="background:var(--gold-lo)">👴</div><div class="sup-info"><div class="sup-name">Father</div><div class="sup-msg">"So proud of you, son."</div></div><div class="sup-amt">¥150</div></div>
+      <div style="text-align:center;margin-top:14px"><button onclick="goTo('s-alert')" style="background:var(--ember-lo);border:1px solid rgba(255,75,31,.3);color:var(--ember);border-radius:12px;padding:9px 18px;font-size:12px;cursor:pointer;font-family:'Noto Sans SC',sans-serif">⚡ Simulate JITAI Alert</button></div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="nav">
+    <div class="ni on"><div class="ico">🏠</div><div class="lbl">Home</div></div>
+    <div class="ni" onclick="goTo('s-cotinine')"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
+    <div class="ni" onclick="goTo('s-gifts')"><div class="ico">🎁</div><div class="lbl">Gifts</div></div>
+    <div class="ni" onclick="goTo('s-pledge')"><div class="ico">💰</div><div class="lbl">Pledge</div></div>
+  </div>
+</div>
+
+<!-- JITAI ALERT -->
+<div id="s-alert" class="scr" style="justify-content:flex-end;min-height:844px">
+  <div class="alert-bg"></div>
+  <div class="alert-map-hint"><div style="font-size:60px">📍</div><div style="color:var(--cloud);font-size:13px">GPS: Near Zhongshan Rd. 便利店</div></div>
+  <div class="alert-sheet">
+    <div class="a-handle"></div>
+    <div class="a-inner">
+      <div class="a-badge">⚡ Vulnerability Detected</div>
+      <div class="a-head">Your body is<br><span style="color:var(--alert)">signaling stress.</span></div>
+      <div class="a-ctx">
+        <div class="a-ctx-item"><div class="a-ctx-ico">📍</div><div style="color:var(--mist);font-size:10px">You're near</div><div class="a-ctx-val">Convenience Store</div></div>
+        <div class="a-ctx-item"><div class="a-ctx-ico">💓</div><div style="color:var(--mist);font-size:10px">HRV dropped</div><div class="a-ctx-val">−22ms spike</div></div>
+        <div class="a-ctx-item"><div class="a-ctx-ico">🕐</div><div style="color:var(--mist);font-size:10px">Time</div><div class="a-ctx-val">3:47 PM</div></div>
+      </div>
+      <div class="a-stakes">
+        <div class="a-s-lbl">If you buy cigarettes now, you forfeit:</div>
+        <div class="srow"><div class="srow-f">💰 Your own pledge</div><div class="srow-a">¥500</div></div>
+        <div class="srow"><div class="srow-f">🏢 Employer bonus</div><div class="srow-a">¥500</div></div>
+        <div class="srow"><div class="srow-f">👩 Sponsored by Li Mei, Father + 10 others</div><div class="srow-a">¥500</div></div>
+        <div class="srow"><div class="srow-total srow-f">Total forfeited</div><div class="srow-a srow-total-a">¥1,500</div></div>
+      </div>
+    </div>
+    <div class="a-btns">
+      <button class="btn btn-jade" onclick="goTo('s-dash')">✓ I'm staying strong — Walk away</button>
+      <button class="btn btn-ghost" onclick="goTo('s-dash')">🧘 Start 60-sec breathing exercise</button>
+    </div>
+  </div>
+</div>
+
+<!-- COTININE VERIFICATION -->
+<div id="s-cotinine" class="scr">
+  <div class="hdr"><div class="back" onclick="goTo('s-dash')">←</div><div class="htitle">Cotinine Verification</div></div>
+  <div class="body" style="padding-bottom:24px">
+    <div class="cot-hero">
+      <div class="cot-icon">🧪</div>
+      <div class="cot-title">Biological Proof You Quit</div>
+      <div class="cot-sub">Unlike self-reported programs, Cinder uses certified cotinine saliva tests — the same methodology used in the Cochrane evidence base and Peking University RCT — to biologically confirm abstinence.</div>
+    </div>
+    <div class="sec-lbl">How It Works</div>
+    <div class="cot-steps">
+      <div class="cot-step"><div class="cs-num">1</div><div><div class="cs-title">Kit Mailed to Your Home</div><div class="cs-desc">A certified saliva collection kit arrives within 3 days. Takes 2 minutes to complete — no clinic visit needed.</div></div></div>
+      <div class="cot-step"><div class="cs-num">2</div><div><div class="cs-title">Return to Certified Lab</div><div class="cs-desc">Seal and post using the prepaid envelope. Results processed by a third-party certified laboratory within 5 business days.</div></div></div>
+      <div class="cot-step"><div class="cs-num">3</div><div><div class="cs-title">Results Stay Private</div><div class="cs-desc">Your individual result goes only to you and the lab. Cinder and your employer only see anonymized team-level pass rates — never your personal data. Full PIPL compliance.</div></div></div>
+      <div class="cot-step"><div class="cs-num">4</div><div><div class="cs-title">Bonus Released to Gift Catalog</div><div class="cs-desc">Upon verified pass, your earned funds unlock immediately and are ready to convert into your chosen family gift.</div></div></div>
+    </div>
+    <div class="sec-lbl">Your Test Schedule</div>
+    <div class="cot-status">
+      <div class="cot-s-title">✅ 6-Month Verified Cessation Program</div>
+      <div class="cot-s-row"><div class="cot-s-lbl">Baseline (Day 0)</div><div class="cot-s-val">✓ Completed</div></div>
+      <div class="cot-s-row"><div class="cot-s-lbl">Month 3 Check-in</div><div class="cot-s-val">✓ PASSED — Kit #C2847</div></div>
+      <div class="cot-s-row"><div class="cot-s-lbl">Month 6 Final</div><div class="cot-s-val">⏳ Kit dispatched</div></div>
+      <div class="cot-s-row"><div class="cot-s-lbl">Final bonus released</div><div class="cot-s-val">On pass confirmation</div></div>
+    </div>
+    <div style="padding:20px"><button class="btn btn-jade">📦 Track My Kit →</button></div>
+    <div class="sp"></div>
+  </div>
+</div>
+
+<!-- GIFT CATALOG -->
+<div id="s-gifts" class="scr">
+  <div class="hdr"><div class="back" onclick="goTo('s-dash')">←</div><div class="htitle">Choose Your Reward</div></div>
+  <div class="body" style="padding-bottom:24px">
+    <div class="gift-hero">
+      <div class="gift-unlocked">¥247</div>
+      <div class="gift-lbl">Unlocked &amp; ready to redeem</div>
+      <div class="gift-sub">"I'm quitting smoking to invest in my family's future." Choose where your earnings go.</div>
+    </div>
+    <div class="sec-lbl">Family Gift Options</div>
+    <div class="gift-grid">
+      <div class="gcard sel" onclick="selGift(this)">
+        <div class="gc-ico">🛒</div>
+        <div class="gc-name">JD.com Voucher</div>
+        <div class="gc-desc">E-commerce credit for the whole family</div>
+        <div class="gc-amt">¥247 available</div>
+      </div>
+      <div class="gcard" onclick="selGift(this)">
+        <div class="gc-ico">📚</div>
+        <div class="gc-name">Education Fund</div>
+        <div class="gc-desc">Children's school or tutoring contribution</div>
+        <div class="gc-amt">¥247 available</div>
+      </div>
+      <div class="gcard" onclick="selGift(this)">
+        <div class="gc-ico">👴</div>
+        <div class="gc-name">Elder Care Package</div>
+        <div class="gc-desc">Health supplements &amp; care gifts for parents</div>
+        <div class="gc-amt">¥247 available</div>
+      </div>
+      <div class="gcard" onclick="selGift(this)">
+        <div class="gc-ico">✈️</div>
+        <div class="gc-name">Family Travel Credit</div>
+        <div class="gc-desc">Ctrip / Fliggy vacation voucher</div>
+        <div class="gc-amt">¥247 available</div>
+      </div>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-fire">Redeem Selected Gift →</button>
+      <div style="font-size:11px;color:var(--mist);text-align:center">¥1,253 more unlocks as you maintain your streak.</div>
+    </div>
+    <div class="sp"></div>
+  </div>
+</div>
+
+<!-- EMPLOYER: DASHBOARD -->
+<div id="s-emp-dash" class="scr">
+  <div class="body">
+    <div class="emp-hdr">
+      <div>
+        <div class="eh-badge">✓ ESG Compliant</div>
+        <div class="eh-company">CRRC Corporation</div>
+        <div class="eh-role">HR Director · Wang Fang</div>
+      </div>
+      <div class="eh-logo">🏭</div>
+    </div>
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-ico">👥</div><div class="kpi-val serif" style="color:var(--white)">2,847</div><div class="kpi-lbl">Enrolled</div><div class="kpi-delta d-b">+312 this month</div></div>
+      <div class="kpi"><div class="kpi-ico">✅</div><div class="kpi-val serif" style="color:var(--jade)">427</div><div class="kpi-lbl">Verified Quitters</div><div class="kpi-delta d-g">15.0% quit rate</div></div>
+      <div class="kpi"><div class="kpi-ico">💊</div><div class="kpi-val serif" style="color:var(--gold)">¥4.1M</div><div class="kpi-lbl">Healthcare Savings</div><div class="kpi-delta d-g">~10× ROI</div></div>
+      <div class="kpi"><div class="kpi-ico">🏆</div><div class="kpi-val serif" style="color:var(--ember)">8</div><div class="kpi-lbl">Active Teams</div><div class="kpi-delta d-g">3 at bonus tier</div></div>
+    </div>
+    <div class="sec-lbl">Department Competition</div>
+    <div class="comp-card card">
+      <div class="comp-hdr"><div class="comp-title">Live Standings</div><div class="tag tag-jade">Anonymized</div></div>
+      <div class="comp-sub">Individual health data is private. Only team-level quit rates shown to HR.</div>
+      <div class="dept-row"><div class="dr-rank">1</div><div class="dr-info"><div class="dr-name">🏆 Engineering Dept.</div><div class="dr-prog-wrap"><div class="dr-pbar"><div class="dr-pfill" style="width:73%"></div></div><div class="dr-pct">73%</div></div></div><div class="dr-bonus tag tag-gold">1.5× bonus</div></div>
+      <div class="dept-row"><div class="dr-rank">2</div><div class="dr-info"><div class="dr-name">Manufacturing Line A</div><div class="dr-prog-wrap"><div class="dr-pbar"><div class="dr-pfill" style="width:61%"></div></div><div class="dr-pct">61%</div></div></div><div class="dr-bonus tag tag-jade">On track</div></div>
+      <div class="dept-row"><div class="dr-rank">3</div><div class="dr-info"><div class="dr-name">Logistics &amp; Fleet</div><div class="dr-prog-wrap"><div class="dr-pbar"><div class="dr-pfill" style="width:44%"></div></div><div class="dr-pct">44%</div></div></div><div class="dr-bonus tag tag-mist">Standard</div></div>
+      <div class="dept-row"><div class="dr-rank">4</div><div class="dr-info"><div class="dr-name">Admin &amp; Finance</div><div class="dr-prog-wrap"><div class="dr-pbar"><div class="dr-pfill" style="width:28%"></div></div><div class="dr-pct">28%</div></div></div><div class="dr-bonus tag tag-mist">Standard</div></div>
+    </div>
+    <div class="sec-lbl">Cotinine Kit Status</div>
+    <div class="cot-table">
+      <div class="ct-row"><div class="ct-av" style="background:var(--jade-lo)">👤</div><div class="ct-name"><div>ENG-2847 (Anonymized)</div><div class="ct-id">Month 6 · Due May 14</div></div><div class="ct-status cts-pend">Kit Sent</div></div>
+      <div class="ct-row"><div class="ct-av" style="background:var(--jade-lo)">👤</div><div class="ct-name"><div>ENG-2201 (Anonymized)</div><div class="ct-id">Month 6 · Due May 12</div></div><div class="ct-status cts-pass">✓ Passed</div></div>
+      <div class="ct-row"><div class="ct-av" style="background:var(--gold-lo)">👤</div><div class="ct-name"><div>MFG-1104 (Anonymized)</div><div class="ct-id">Month 3 · Overdue</div></div><div class="ct-status cts-pend">Reminder Sent</div></div>
+      <div class="ct-row"><div class="ct-av" style="background:rgba(74,158,255,.1)">👤</div><div class="ct-name"><div>LOG-0892 (Anonymized)</div><div class="ct-id">Month 3 · Due May 20</div></div><div class="ct-status cts-sent">Kit Dispatched</div></div>
+    </div>
+    <div class="sec-lbl">Return on Investment</div>
+    <div class="roi-card">
+      <div class="roi-hdr"><div class="roi-title">Program ROI</div><div class="roi-period">YTD 2026</div></div>
+      <div class="roi-big">10.2×</div>
+      <div class="roi-sub">Per ¥700 all-in cost per enrolled employee</div>
+      <div class="roi-rows">
+        <div class="roi-row"><div class="roi-row-l">Software license (2,847 × ¥200)</div><div class="roi-row-r r">¥569,400</div></div>
+        <div class="roi-row"><div class="roi-row-l">Bonuses disbursed (427 × ¥500)</div><div class="roi-row-r r">¥213,500</div></div>
+        <div class="roi-row"><div class="roi-row-l">Total program cost</div><div class="roi-row-r r">¥782,900</div></div>
+        <div class="roi-row"><div class="roi-row-l">Healthcare savings (427 × ¥9,600)</div><div class="roi-row-r g">¥4,099,200</div></div>
+        <div class="roi-row"><div class="roi-row-l">Net benefit</div><div class="roi-row-r g">¥3,316,300</div></div>
+      </div>
+    </div>
+    <div class="sec-lbl">ESG Reporting</div>
+    <div class="esg-card card">
+      <div class="esg-hdr"><div class="esg-title">Q1 2026 Report</div><div class="esg-badge">✓ PIPL Compliant</div></div>
+      <div class="esg-row"><div class="esg-icon">🏭</div><div class="esg-metric"><div>Workplace Smoking Rate</div><div class="esg-sub">Healthy China 2030 target: &lt;20%</div></div><div><div class="esg-val">18.4%</div><div style="font-size:10px;color:var(--jade)">↓ from 31.2%</div></div></div>
+      <div class="esg-row"><div class="esg-icon">✅</div><div class="esg-metric"><div>Verified Cessation Rate</div><div class="esg-sub">Cochrane benchmark: 10%</div></div><div><div class="esg-val">15.0%</div><div style="font-size:10px;color:var(--jade)">+50% above baseline</div></div></div>
+      <div class="esg-row"><div class="esg-icon">🧪</div><div class="esg-metric"><div>Biological Verification</div><div class="esg-sub">Cotinine-confirmed, not self-reported</div></div><div><div class="esg-val">100%</div><div style="font-size:10px;color:var(--jade)">All quitters verified</div></div></div>
+      <div class="esg-row"><div class="esg-icon">📋</div><div class="esg-metric"><div>CSR Disclosure Filed</div><div class="esg-sub">April 2026 ESG deadline</div></div><div><div class="esg-val">✓ Filed</div><div style="font-size:10px;color:var(--jade)">On time</div></div></div>
+      <div style="margin-top:14px"><button class="btn btn-jade" onclick="goTo('s-enroll')">+ Enroll New Cohort</button></div>
+    </div>
+    <div class="sp"></div>
+  </div>
+  <div class="nav">
+    <div class="ni on"><div class="ico">📊</div><div class="lbl">Dashboard</div></div>
+    <div class="ni" onclick="goTo('s-enroll')"><div class="ico">➕</div><div class="lbl">Enroll</div></div>
+    <div class="ni"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
+    <div class="ni" onclick="goTo('s-login')"><div class="ico">🚪</div><div class="lbl">Log Out</div></div>
+  </div>
+</div>
+
+<!-- EMPLOYER: ENROLL COHORT -->
+<div id="s-enroll" class="scr">
+  <div class="hdr"><div class="back" onclick="goTo('s-emp-dash')">←</div><div class="htitle">Enroll New Cohort</div></div>
+  <div class="body" style="padding-bottom:24px">
+    <div class="sec-lbl" style="padding-top:8px">Program Details</div>
+    <div class="enroll-form">
+      <div class="ef-field"><label class="ef-lbl">Department / Team Name</label><input class="ef-input" type="text" placeholder="e.g. Manufacturing Line B"></div>
+      <div class="ef-row">
+        <div class="ef-field"><label class="ef-lbl">No. of Employees</label><input class="ef-input" type="number" placeholder="120"></div>
+        <div class="ef-field"><label class="ef-lbl">Start Date</label><input class="ef-input" type="date"></div>
+      </div>
+      <div class="ef-field"><label class="ef-lbl">Bonus per Verified Quitter</label>
+        <select class="ef-select">
+          <option>¥500 (Standard — Cochrane validated)</option>
+          <option>¥600 (Peking University RCT benchmark)</option>
+          <option>¥800 (Premium incentive tier)</option>
+        </select>
+      </div>
+      <div class="ef-field"><label class="ef-lbl">Gift Type</label>
+        <select class="ef-select">
+          <option>Employee choice (JD, Education, Elder Care, Travel)</option>
+          <option>JD.com voucher only</option>
+          <option>Education fund only</option>
+          <option>Elder care package only</option>
+        </select>
+      </div>
+      <div class="ef-field"><label class="ef-lbl">ESG Report Category</label>
+        <select class="ef-select">
+          <option>Employee Health &amp; Wellbeing</option>
+          <option>Occupational Safety</option>
+          <option>Healthy China 2030 Alignment</option>
+        </select>
+      </div>
+    </div>
+    <div class="sec-lbl">Projected Outcomes</div>
+    <div class="program-preview">
+      <div class="pp-title">📊 Estimated Impact (120 employees)</div>
+      <div class="pp-row"><div class="pp-k">Expected quitters at 15%</div><div class="pp-v">18 employees</div></div>
+      <div class="pp-row"><div class="pp-k">Software license cost</div><div class="pp-v">¥24,000 / yr</div></div>
+      <div class="pp-row"><div class="pp-k">Expected bonus disbursements</div><div class="pp-v">¥9,000</div></div>
+      <div class="pp-row"><div class="pp-k">Total cost to company</div><div class="pp-v">¥33,000</div></div>
+      <div class="pp-row"><div class="pp-k">Est. healthcare savings</div><div class="pp-v">¥172,800</div></div>
+      <div class="pp-row"><div class="pp-k">Net ROI</div><div class="pp-v" style="color:var(--jade)">~5.2× return</div></div>
+    </div>
+    <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-jade" onclick="goTo('s-emp-dash')">Launch Program →</button>
+      <button class="btn btn-ghost" onclick="goTo('s-emp-dash')">Save as Draft</button>
+    </div>
+    <div class="sp"></div>
+  </div>
+</div>
+
+</div>
+<script>
+function goTo(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function updPledge(v){
+  v=parseInt(v);
+  document.getElementById('pd').textContent=v.toLocaleString();
+  document.getElementById('f-you').textContent='¥'+v.toLocaleString();
+  document.getElementById('f-emp').textContent='¥'+v.toLocaleString();
+  document.getElementById('f-soc').textContent='¥'+v.toLocaleString();
+  document.getElementById('f-tot').textContent='¥'+(v*3).toLocaleString();
+  const pct=((v-100)/(2000-100))*100;
+  document.getElementById('pslider').style.background=
+    `linear-gradient(to right,var(--ember) ${pct}%,var(--haze) ${pct}%)`;
+}
+function setPledge(v,el){
+  document.getElementById('pslider').value=v;
+  updPledge(v);
+  document.querySelectorAll('.pre').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function selGift(el){
+  document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+</script>
+</body>
+</html>
