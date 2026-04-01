@@ -8,7 +8,7 @@ This prototype was built as part of a UCLA Anderson Global Immersion course proj
 
 ## 🚀 Live Demo
 
-> Open `cinder-app.html` directly in any browser — no installation or build step required.
+> Open https://charlotteclark.io/cinder-app/) directly in any browser - no installation or build step required.
 
 ---
 
