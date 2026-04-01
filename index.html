@@ -443,8 +443,8 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="sh-days">23</div>
       <div class="sh-lbl">smoke-free days</div>
       <div class="sh-meta">
-        <div class="sh-m"><strong>¥247</strong>unlocked</div>
-        <div class="sh-m"><strong>¥1,253</strong>at stake</div>
+        <div class="sh-m"><strong id="dash-earned">¥247</strong>unlocked</div>
+        <div class="sh-m"><strong id="dash-remaining">¥1,253</strong>at stake</div>
         <div class="sh-m"><strong>7d</strong>to payout</div>
       </div>
     </div>
@@ -467,12 +467,12 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
     </div>
     <div class="sec-lbl">Pledge Pool</div>
     <div class="pledge-prog card">
-      <div class="pp-hdr"><div><div class="pp-lbl">Total pledged to you</div></div><div><div class="pp-amt">¥1,500</div><div class="pp-sub">37% earned back</div></div></div>
+      <div class="pp-hdr"><div><div class="pp-lbl">Total pledged to you</div></div><div><div class="pp-amt" id="dash-total">¥1,500</div><div class="pp-sub">37% earned back</div></div></div>
       <div class="pbar"><div class="pfill" style="width:37%"></div></div>
       <div class="pp-mini">
-        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Your stake</div></div>
-        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Employer</div></div>
-        <div class="ppm"><div class="ppm-v">¥500</div><div class="ppm-l">Friends</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-you">¥500</div><div class="ppm-l">Your stake</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-emp">¥500</div><div class="ppm-l">Employer</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-soc">¥500</div><div class="ppm-l">Friends</div></div>
       </div>
     </div>
     <div class="sec-lbl">Health Progress</div>
@@ -506,6 +506,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
     <div class="ni" onclick="goTo('s-cotinine')"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
     <div class="ni" onclick="goTo('s-gifts')"><div class="ico">🎁</div><div class="lbl">Gifts</div></div>
     <div class="ni" onclick="goTo('s-pledge')"><div class="ico">💰</div><div class="lbl">Pledge</div></div>
+    <div class="ni" onclick="goTo('s-login')"><div class="ico">🚪</div><div class="lbl">Log Out</div></div>
   </div>
 </div>
 
@@ -525,15 +526,15 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       </div>
       <div class="a-stakes">
         <div class="a-s-lbl">If you buy cigarettes now, you forfeit:</div>
-        <div class="srow"><div class="srow-f">💰 Your own pledge</div><div class="srow-a">¥500</div></div>
-        <div class="srow"><div class="srow-f">🏢 Employer bonus</div><div class="srow-a">¥500</div></div>
-        <div class="srow"><div class="srow-f">👩 Sponsored by Li Mei, Father + 10 others</div><div class="srow-a">¥500</div></div>
-        <div class="srow"><div class="srow-total srow-f">Total forfeited</div><div class="srow-a srow-total-a">¥1,500</div></div>
+        <div class="srow"><div class="srow-f">💰 Your own pledge</div><div class="srow-a" id="jitai-you">¥500</div></div>
+        <div class="srow"><div class="srow-f">🏢 Employer bonus</div><div class="srow-a" id="jitai-emp">¥500</div></div>
+        <div class="srow"><div class="srow-f">👩 Sponsored by Li Mei, Father + 10 others</div><div class="srow-a" id="jitai-soc">¥500</div></div>
+        <div class="srow"><div class="srow-total srow-f">Total forfeited</div><div class="srow-a srow-total-a" id="jitai-total">¥1,500</div></div>
       </div>
     </div>
     <div class="a-btns">
       <button class="btn btn-jade" onclick="goTo('s-dash')">✓ I'm staying strong — Walk away</button>
-      <button class="btn btn-ghost" onclick="goTo('s-dash')">🧘 Start 60-sec breathing exercise</button>
+      <button class="btn btn-ghost" onclick="startBreathing()">🧘 Start 60-sec breathing exercise</button>
     </div>
   </div>
 </div>
@@ -604,7 +605,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       </div>
     </div>
     <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
-      <button class="btn btn-fire">Redeem Selected Gift →</button>
+      <button class="btn btn-fire" onclick="goTo('s-gift-confirm')">Redeem Selected Gift →</button>
       <div style="font-size:11px;color:var(--mist);text-align:center">¥1,253 more unlocks as you maintain your streak.</div>
     </div>
     <div class="sp"></div>
@@ -671,6 +672,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   <div class="nav">
     <div class="ni on"><div class="ico">📊</div><div class="lbl">Dashboard</div></div>
     <div class="ni" onclick="goTo('s-enroll')"><div class="ico">➕</div><div class="lbl">Enroll</div></div>
+    <div class="ni"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
     <div class="ni" onclick="goTo('s-login')"><div class="ico">🚪</div><div class="lbl">Log Out</div></div>
   </div>
 </div>
@@ -727,11 +729,56 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   </div>
 </div>
 
+<!-- GIFT CONFIRMATION -->
+<div id="s-gift-confirm" class="scr" style="background:radial-gradient(ellipse at 50% 30%, rgba(240,192,64,0.15) 0%, transparent 60%), var(--ash);justify-content:center;align-items:center;padding:40px 32px;text-align:center;">
+  <div style="width:100px;height:100px;border-radius:50%;border:3px solid rgba(240,192,64,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;animation:ring-pulse-gold 2s ease-in-out infinite;">
+    <div style="width:76px;height:76px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;">🛒</div>
+  </div>
+  <div style="font-family:'Fraunces',serif;font-size:34px;margin-bottom:10px;">Gift Redeemed!</div>
+  <div style="color:var(--cloud);font-size:14px;line-height:1.65;margin-bottom:28px;">Your <strong style="color:var(--gold)">¥247 JD.com voucher</strong> has been sent to your WeChat wallet. Your family will receive it within 24 hours.</div>
+  <div style="background:var(--gold-lo);border:1px solid rgba(240,192,64,0.25);border-radius:22px;padding:20px;width:100%;margin-bottom:28px;">
+    <div style="font-size:12px;color:var(--mist);margin-bottom:6px;">Next payout unlocks in</div>
+    <div style="font-family:'Fraunces',serif;font-size:42px;color:var(--gold);line-height:1;">7 days</div>
+    <div style="font-size:12px;color:var(--mist);margin-top:4px;">Keep your streak going — ¥1,253 still to earn</div>
+    <div style="margin-top:14px"><div class="pbar"><div class="pfill" style="width:37%;background:linear-gradient(90deg,var(--gold),#FFE080)"></div></div></div>
+  </div>
+  <button class="btn btn-dark" style="width:100%" onclick="goTo('s-dash')">← Back to Dashboard</button>
+</div>
+
+<!-- BREATHING EXERCISE -->
+<div id="s-breathing" class="scr" style="background:radial-gradient(ellipse at 50% 40%, rgba(46,204,138,0.12) 0%, transparent 60%), var(--ash);justify-content:center;align-items:center;padding:40px 28px;text-align:center;">
+  <div style="font-size:13px;color:var(--mist);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">JITAI — Breathing Exercise</div>
+  <div style="font-family:'Fraunces',serif;font-size:28px;margin-bottom:40px;">Take a breath.<br><span style="color:var(--jade)">You're in control.</span></div>
+
+  <!-- Breathing circle -->
+  <div style="position:relative;width:200px;height:200px;margin:0 auto 32px;">
+    <div id="breath-ring" style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(46,204,138,0.2);animation:breathe 8s ease-in-out infinite;"></div>
+    <div id="breath-circle" style="position:absolute;inset:16px;border-radius:50%;background:radial-gradient(circle, rgba(46,204,138,0.3), rgba(46,204,138,0.05));animation:breathe 8s ease-in-out infinite;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;">
+      <div id="breath-label" style="font-size:16px;font-weight:700;color:var(--jade)">Breathe In</div>
+      <div id="breath-count" style="font-family:'Space Mono',monospace;font-size:32px;color:var(--white)">4</div>
+    </div>
+  </div>
+
+  <div id="breath-instruction" style="font-size:14px;color:var(--cloud);line-height:1.65;margin-bottom:12px;min-height:44px;">Inhale slowly through your nose for 4 counts.</div>
+
+  <!-- Timer bar -->
+  <div style="width:100%;margin-bottom:28px;">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--mist);margin-bottom:8px;font-family:'Space Mono',monospace;">
+      <span>Progress</span><span id="total-timer">60s remaining</span>
+    </div>
+    <div class="pbar"><div id="breath-progress" class="pfill" style="width:0%;background:linear-gradient(90deg,var(--jade),#7EFFC5);transition:width 1s linear"></div></div>
+  </div>
+
+  <button id="breath-done-btn" class="btn btn-jade" style="display:none" onclick="goTo('s-dash')">✓ Done — Back to Dashboard</button>
+  <button id="breath-skip-btn" class="btn btn-ghost" onclick="goTo('s-dash')">Skip exercise</button>
+</div>
+
 </div>
 <script>
 function goTo(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
+  if(id==='s-breathing') startBreathingAnim();
 }
 function updPledge(v){
   v=parseInt(v);
@@ -743,6 +790,21 @@ function updPledge(v){
   const pct=((v-100)/(2000-100))*100;
   document.getElementById('pslider').style.background=
     `linear-gradient(to right,var(--ember) ${pct}%,var(--haze) ${pct}%)`;
+  // sync dashboard
+  const total = v*3;
+  const earned = Math.round(total*0.37);
+  const remaining = total - earned;
+  document.getElementById('dash-total').textContent='¥'+total.toLocaleString();
+  document.getElementById('dash-earned').textContent='¥'+earned.toLocaleString();
+  document.getElementById('dash-remaining').textContent='¥'+remaining.toLocaleString();
+  document.getElementById('dash-ppm-you').textContent='¥'+v.toLocaleString();
+  document.getElementById('dash-ppm-emp').textContent='¥'+v.toLocaleString();
+  document.getElementById('dash-ppm-soc').textContent='¥'+v.toLocaleString();
+  // sync JITAI alert
+  document.getElementById('jitai-you').textContent='¥'+v.toLocaleString();
+  document.getElementById('jitai-emp').textContent='¥'+v.toLocaleString();
+  document.getElementById('jitai-soc').textContent='¥'+v.toLocaleString();
+  document.getElementById('jitai-total').textContent='¥'+total.toLocaleString();
 }
 function setPledge(v,el){
   document.getElementById('pslider').value=v;
@@ -753,7 +815,76 @@ function setPledge(v,el){
 function selGift(el){
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
+  // update gift confirm screen icon/name to match selection
+  const name = el.querySelector('.gc-name').textContent;
+  const ico = el.querySelector('.gc-ico').textContent;
+  const confirmIcon = document.querySelector('#s-gift-confirm .w-76px, #s-gift-confirm [style*="font-size:36px"]');
+  if(confirmIcon) confirmIcon.textContent = ico;
+  const confirmText = document.querySelector('#s-gift-confirm strong');
+  const amt = el.querySelector('.gc-amt').textContent.split(' ')[0];
+  if(confirmText) confirmText.textContent = amt + ' ' + name;
+}
+function startBreathing(){ goTo('s-breathing'); }
+
+let breathTimer = null;
+function startBreathingAnim(){
+  // Reset state
+  clearInterval(breathTimer);
+  const phases = [
+    {label:'Breathe In', instruction:'Inhale slowly through your nose for 4 counts.', duration:4},
+    {label:'Hold', instruction:'Hold your breath gently — stay calm.', duration:4},
+    {label:'Breathe Out', instruction:'Exhale slowly through your mouth for 8 counts.', duration:8},
+    {label:'Hold', instruction:'Rest for 4 counts before the next breath.', duration:4},
+  ];
+  const totalSeconds = 60;
+  let elapsed = 0;
+  let phaseIdx = 0;
+  let phaseElapsed = 0;
+
+  const labelEl = document.getElementById('breath-label');
+  const countEl = document.getElementById('breath-count');
+  const instrEl = document.getElementById('breath-instruction');
+  const progEl  = document.getElementById('breath-progress');
+  const timerEl = document.getElementById('total-timer');
+  const doneBtn = document.getElementById('breath-done-btn');
+  const skipBtn = document.getElementById('breath-skip-btn');
+
+  doneBtn.style.display = 'none';
+  skipBtn.style.display = 'block';
+
+  function tick(){
+    if(elapsed >= totalSeconds){
+      clearInterval(breathTimer);
+      labelEl.textContent = 'Well done!';
+      countEl.textContent = '✓';
+      instrEl.textContent = 'You made it through. The craving has passed.';
+      progEl.style.width = '100%';
+      timerEl.textContent = 'Complete!';
+      doneBtn.style.display = 'block';
+      skipBtn.style.display = 'none';
+      return;
+    }
+    const phase = phases[phaseIdx];
+    const remaining = phase.duration - phaseElapsed;
+    labelEl.textContent = phase.label;
+    countEl.textContent = remaining;
+    instrEl.textContent = phase.instruction;
+    progEl.style.width = ((elapsed / totalSeconds) * 100) + '%';
+    timerEl.textContent = (totalSeconds - elapsed) + 's remaining';
+    phaseElapsed++;
+    elapsed++;
+    if(phaseElapsed >= phase.duration){
+      phaseElapsed = 0;
+      phaseIdx = (phaseIdx + 1) % phases.length;
+    }
+  }
+  tick();
+  breathTimer = setInterval(tick, 1000);
 }
 </script>
+<style>
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
+@keyframes ring-pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(240,192,64,.3)}50%{box-shadow:0 0 0 20px rgba(240,192,64,0)}}
+</style>
 </body>
 </html>
