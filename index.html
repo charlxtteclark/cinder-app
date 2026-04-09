@@ -402,35 +402,66 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   </div>
 </div>
 
-<!-- SMOKER: PLEDGE SETUP -->
+<!-- SMOKER: ENROLL SCREEN -->
 <div id="s-pledge" class="scr">
-  <div class="hdr"><div class="back" onclick="goTo('s-login')">←</div><div class="htitle">Set Your Pledge</div></div>
+  <div class="hdr"><div class="back" onclick="goTo('s-login')">←</div><div class="htitle">Your Program</div></div>
   <div style="overflow-y:auto;flex:1;padding-bottom:24px">
-    <div class="pledge-hero">
-      <div class="ph-lbl">Your personal stake</div>
-      <div><span class="ph-amt" id="pd">500</span><span style="font-family:'Fraunces',serif;font-size:36px;color:var(--ember)"> ¥</span></div>
-      <div class="ph-cur">Returned in full when you pass your Month 6 cotinine test.</div>
-      <input type="range" class="pledge-slider" id="pslider" min="100" max="2000" step="100" value="500" oninput="updPledge(this.value)">
+
+    <!-- Employer bonus hero — no employee money -->
+    <div class="pledge-hero" style="text-align:left;padding:24px 22px">
+      <div style="font-size:11px;color:var(--mist);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Your employer is offering</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
+        <span style="font-family:'Fraunces',serif;font-size:68px;color:var(--jade);line-height:1">¥500</span>
+        <span style="font-size:14px;color:var(--cloud);padding-bottom:14px">bonus</span>
+      </div>
+      <div style="font-size:14px;color:var(--cloud);line-height:1.6">if you quit smoking and pass your <strong style="color:var(--white)">Month 6 cotinine test</strong>. No money required from you — this is entirely funded by CRRC Corporation.</div>
     </div>
-    <div class="presets">
-      <button class="pre" onclick="setPledge(300,this)">¥300</button>
-      <button class="pre on" onclick="setPledge(500,this)">¥500</button>
-      <button class="pre" onclick="setPledge(1000,this)">¥1,000</button>
-      <button class="pre" onclick="setPledge(2000,this)">¥2,000</button>
-    </div>
+
+    <!-- How you earn it -->
+    <div class="sec-lbl">How it works</div>
     <div class="fund-table">
-      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--ember-lo)">💰</div><div><div>Your pledge</div><div class="frow-sub">Returned on verified success</div></div></div><div class="frow-amt" id="f-you">¥500</div></div>
-      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🏢</div><div><div>Employer bonus</div><div class="frow-sub">Paid on cotinine confirmation</div></div></div><div class="frow-amt" id="f-emp">¥500</div></div>
-      <div class="frow"><div class="frow-l"><div class="frow-ico" style="background:var(--gold-lo)">👨‍👩‍👧</div><div><div>Friends &amp; family</div><div class="frow-sub">Crowdfunded via WeChat Moments</div></div></div><div class="frow-amt" id="f-soc">¥500</div></div>
-      <div class="frow frow-total"><div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🎯</div><div style="font-size:15px;font-weight:700">Total you can earn</div></div><div class="frow-amt" id="f-tot" style="font-size:19px">¥1,500</div></div>
+      <div class="frow">
+        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🏢</div><div><div>Employer bonus</div><div class="frow-sub">Funded 100% by your company</div></div></div>
+        <div class="frow-amt">¥500</div>
+      </div>
+      <div class="frow">
+        <div class="frow-l"><div class="frow-ico" style="background:rgba(74,158,255,.12)">🧪</div><div><div>Verified by cotinine test</div><div class="frow-sub">Biological proof — not self-reported</div></div></div>
+        <div style="font-size:12px;color:var(--blue);font-weight:700;font-family:'Space Mono',monospace">Month 3 + 6</div>
+      </div>
+      <div class="frow">
+        <div class="frow-l"><div class="frow-ico" style="background:var(--gold-lo)">🎁</div><div><div>Paid as a family gift</div><div class="frow-sub">JD.com, education fund, elder care, travel</div></div></div>
+        <div style="font-size:12px;color:var(--gold);font-weight:700;font-family:'Space Mono',monospace">Your choice</div>
+      </div>
+      <div class="frow frow-total">
+        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">✓</div><div style="font-size:15px;font-weight:700">No money required from you</div></div>
+        <div class="frow-amt">¥0 risk</div>
+      </div>
     </div>
-    <div class="sec-lbl">Connect Devices</div>
+
+    <!-- Team bonus callout -->
+    <div style="margin:16px 20px 0;padding:16px;background:var(--jade-lo);border:1px solid rgba(46,204,138,.2);border-radius:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--jade);margin-bottom:6px">🏆 Team bonus multiplier</div>
+      <div style="font-size:12px;color:var(--cloud);line-height:1.6">If 5 or more of your teammates also quit, everyone's bonus increases by <strong style="color:var(--jade)">1.5×</strong> — turning this into a collective achievement, not just a personal one.</div>
+    </div>
+
+    <!-- Fix 2: Devices as optional -->
+    <div class="sec-lbl">Optional — Connect Devices</div>
+    <div style="margin:0 20px 10px;font-size:12px;color:var(--mist);line-height:1.5">These are optional extras that help us detect cravings earlier and send more timely nudges. The core program works without them — only the cotinine test is required for verification.</div>
     <div class="connect-wrap">
-      <div class="crow"><div class="crow-l"><span style="font-size:20px">⌚</span><div><div>Huawei Health / Apple Watch</div><div class="crow-sub">HRV · Heart Rate · SpO₂ · Steps</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
-      <div class="crow"><div class="crow-l"><span style="font-size:20px">💳</span><div><div>WeChat Pay</div><div class="crow-sub">Tobacco merchant transaction monitoring</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
-      <div class="crow"><div class="crow-l"><span style="font-size:20px">🎤</span><div><div>Acoustic Monitoring</div><div class="crow-sub">Cough frequency via microphone</div></div></div><div class="tog" onclick="this.classList.toggle('on')"></div></div>
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">⌚</span><div><div>Huawei Health / Apple Watch <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">HRV · Heart Rate · SpO₂ · Steps</div></div></div>
+        <div class="tog" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">💳</span><div><div>WeChat Pay <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">Tobacco merchant transaction monitoring</div></div></div>
+        <div class="tog" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">🎤</span><div><div>Acoustic Monitoring <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">Cough frequency via microphone</div></div></div>
+        <div class="tog" onclick="this.classList.toggle('on')"></div>
+      </div>
     </div>
-    <div style="padding:20px"><button class="btn btn-fire" onclick="goTo('s-dash')">Lock In Pledge &amp; Begin →</button></div>
+    <div style="padding:20px"><button class="btn btn-jade" onclick="goTo('s-dash')">Enroll in Program →</button></div>
   </div>
 </div>
 
@@ -443,8 +474,8 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="sh-days">23</div>
       <div class="sh-lbl">smoke-free days</div>
       <div class="sh-meta">
-        <div class="sh-m"><strong id="dash-earned">¥247</strong>unlocked</div>
-        <div class="sh-m"><strong id="dash-remaining">¥1,253</strong>at stake</div>
+        <div class="sh-m"><strong id="dash-streak-earned">¥185</strong>bonus earned</div>
+        <div class="sh-m"><strong id="dash-streak-remaining">¥315</strong>still to unlock</div>
         <div class="sh-m"><strong>7d</strong>to payout</div>
       </div>
     </div>
@@ -465,14 +496,14 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="vchip warn"><div class="vi">🎤</div><div class="vl">Cough</div><div class="vs">Tracking</div></div>
       <div class="vchip ok"><div class="vi">🧪</div><div class="vl">Cotinine</div><div class="vs">✓ Wk 12</div></div>
     </div>
-    <div class="sec-lbl">Pledge Pool</div>
+    <div class="sec-lbl">Your Bonus Progress</div>
     <div class="pledge-prog card">
-      <div class="pp-hdr"><div><div class="pp-lbl">Total pledged to you</div></div><div><div class="pp-amt" id="dash-total">¥1,500</div><div class="pp-sub">37% earned back</div></div></div>
+      <div class="pp-hdr"><div><div class="pp-lbl">Employer bonus available</div></div><div><div class="pp-amt" id="dash-total">¥500</div><div class="pp-sub">37% earned back</div></div></div>
       <div class="pbar"><div class="pfill" style="width:37%"></div></div>
       <div class="pp-mini">
-        <div class="ppm"><div class="ppm-v" id="dash-ppm-you">¥500</div><div class="ppm-l">Your stake</div></div>
-        <div class="ppm"><div class="ppm-v" id="dash-ppm-emp">¥500</div><div class="ppm-l">Employer</div></div>
-        <div class="ppm"><div class="ppm-v" id="dash-ppm-soc">¥500</div><div class="ppm-l">Friends</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-emp">¥500</div><div class="ppm-l">Employer bonus</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-earned">¥185</div><div class="ppm-l">Earned so far</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-remaining">¥315</div><div class="ppm-l">Still to unlock</div></div>
       </div>
     </div>
     <div class="sec-lbl">Health Progress</div>
@@ -491,12 +522,12 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="team-row"><div class="tm-rank">4</div><div class="tm-av" style="background:var(--gold-lo)">👴</div><div class="tm-info"><div class="tm-name">Wang Lei</div><div class="tm-prog">Day 8 · Needs support</div></div><div class="tm-days">8d</div></div>
       <div style="margin-top:12px;padding:10px;background:var(--jade-lo);border-radius:12px;font-size:12px;color:var(--jade);border:1px solid rgba(46,204,138,.2)">🏆 5+ teammates quit = <strong>1.5× bonus multiplier</strong> for the whole team!</div>
     </div>
-    <div class="sec-lbl">Your Supporters</div>
+    <div class="sec-lbl">Team Encouragement</div>
     <div class="sup-card card">
-      <div class="tc-hdr"><div class="tc-title">Cheering you on</div><div class="tag tag-fire">12 sponsors</div></div>
-      <div class="sup-row"><div class="sup-av" style="background:rgba(255,107,53,.15)">👩</div><div class="sup-info"><div class="sup-name">Li Mei (Wife)</div><div class="sup-msg">"我为你骄傲！Keep going! 💪"</div></div><div class="sup-amt">¥200</div></div>
-      <div class="sup-row"><div class="sup-av" style="background:var(--jade-lo)">👨‍💼</div><div class="sup-info"><div class="sup-name">Manager Wang</div><div class="sup-msg">"The whole team is rooting for you."</div></div><div class="sup-amt">¥100</div></div>
-      <div class="sup-row"><div class="sup-av" style="background:var(--gold-lo)">👴</div><div class="sup-info"><div class="sup-name">Father</div><div class="sup-msg">"So proud of you, son."</div></div><div class="sup-amt">¥150</div></div>
+      <div class="tc-hdr"><div class="tc-title">Cheering you on</div><div class="tag tag-jade">3 messages</div></div>
+      <div class="sup-row"><div class="sup-av" style="background:rgba(255,107,53,.15)">👩</div><div class="sup-info"><div class="sup-name">Li Mei (Wife)</div><div class="sup-msg">"我为你骄傲！So proud of you! 💪"</div></div></div>
+      <div class="sup-row"><div class="sup-av" style="background:var(--jade-lo)">👨‍💼</div><div class="sup-info"><div class="sup-name">Manager Wang</div><div class="sup-msg">"The whole team is rooting for you."</div></div></div>
+      <div class="sup-row"><div class="sup-av" style="background:var(--gold-lo)">👴</div><div class="sup-info"><div class="sup-name">Father</div><div class="sup-msg">"So proud of you, son."</div></div></div>
       <div style="text-align:center;margin-top:14px"><button onclick="goTo('s-alert')" style="background:var(--ember-lo);border:1px solid rgba(255,75,31,.3);color:var(--ember);border-radius:12px;padding:9px 18px;font-size:12px;cursor:pointer;font-family:'Noto Sans SC',sans-serif">⚡ Simulate JITAI Alert</button></div>
     </div>
     <div class="sp"></div>
@@ -525,11 +556,10 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
         <div class="a-ctx-item"><div class="a-ctx-ico">🕐</div><div style="color:var(--mist);font-size:10px">Time</div><div class="a-ctx-val">3:47 PM</div></div>
       </div>
       <div class="a-stakes">
-        <div class="a-s-lbl">If you buy cigarettes now, you forfeit:</div>
-        <div class="srow"><div class="srow-f">💰 Your own pledge</div><div class="srow-a" id="jitai-you">¥500</div></div>
-        <div class="srow"><div class="srow-f">🏢 Employer bonus</div><div class="srow-a" id="jitai-emp">¥500</div></div>
-        <div class="srow"><div class="srow-f">👩 Sponsored by Li Mei, Father + 10 others</div><div class="srow-a" id="jitai-soc">¥500</div></div>
-        <div class="srow"><div class="srow-total srow-f">Total forfeited</div><div class="srow-a srow-total-a" id="jitai-total">¥1,500</div></div>
+        <div class="a-s-lbl">If you smoke now, you lose your progress toward:</div>
+        <div class="srow"><div class="srow-f">🏢 Employer bonus (fully funded by CRRC)</div><div class="srow-a" id="jitai-emp">¥500</div></div>
+        <div class="srow"><div class="srow-f">🏆 Team multiplier (your team is counting on you)</div><div class="srow-a">1.5×</div></div>
+        <div class="srow"><div class="srow-total srow-f">Bonus you'd be giving up</div><div class="srow-a srow-total-a" id="jitai-total">¥500</div></div>
       </div>
     </div>
     <div class="a-btns">
@@ -573,9 +603,9 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   <div class="hdr"><div class="back" onclick="goTo('s-dash')">←</div><div class="htitle">Choose Your Reward</div></div>
   <div class="body" style="padding-bottom:24px">
     <div class="gift-hero">
-      <div class="gift-unlocked">¥247</div>
-      <div class="gift-lbl">Unlocked &amp; ready to redeem</div>
-      <div class="gift-sub">"I'm quitting smoking to invest in my family's future." Choose where your earnings go.</div>
+      <div class="gift-unlocked">¥185</div>
+      <div class="gift-lbl">Employer bonus earned so far</div>
+      <div class="gift-sub">"I'm quitting to invest in my family's future." Choose where your bonus goes.</div>
     </div>
     <div class="sec-lbl">Family Gift Options</div>
     <div class="gift-grid">
@@ -606,7 +636,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
     </div>
     <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
       <button class="btn btn-fire" onclick="goTo('s-gift-confirm')">Redeem Selected Gift →</button>
-      <div style="font-size:11px;color:var(--mist);text-align:center">¥1,253 more unlocks as you maintain your streak.</div>
+      <div style="font-size:11px;color:var(--mist);text-align:center">¥315 more unlocks as you maintain your streak.</div>
     </div>
     <div class="sp"></div>
   </div>
