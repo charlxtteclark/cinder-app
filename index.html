@@ -404,64 +404,92 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
 
 <!-- SMOKER: ENROLL SCREEN -->
 <div id="s-pledge" class="scr">
-  <div class="hdr"><div class="back" onclick="goTo('s-login')">←</div><div class="htitle">Your Program</div></div>
+  <div class="hdr"><div class="back" onclick="goTo('s-login')">←</div><div class="htitle">Commit to Quit</div></div>
   <div style="overflow-y:auto;flex:1;padding-bottom:24px">
 
-    <!-- Employer bonus hero — no employee money -->
-    <div class="pledge-hero" style="text-align:left;padding:24px 22px">
-      <div style="font-size:11px;color:var(--mist);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Your employer is offering</div>
-      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:6px">
-        <span style="font-family:'Fraunces',serif;font-size:68px;color:var(--jade);line-height:1">¥500</span>
-        <span style="font-size:14px;color:var(--cloud);padding-bottom:14px">bonus</span>
+    <!-- Matching mechanic hero -->
+    <div class="pledge-hero" style="text-align:left;padding:22px 22px 18px">
+      <div style="font-size:11px;color:var(--mist);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">CRRC Corporation's matching program</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="background:rgba(255,75,31,0.1);border:1px solid rgba(255,75,31,0.25);border-radius:14px;padding:14px">
+          <div style="font-size:11px;color:var(--mist);margin-bottom:4px">Your commitment</div>
+          <div style="font-family:'Fraunces',serif;font-size:32px;color:var(--ember);line-height:1" id="enroll-stake-display">¥300</div>
+          <div style="font-size:11px;color:var(--cloud);margin-top:4px">You get back if you quit</div>
+          <div style="font-size:10px;color:var(--ember);margin-top:2px">You forfeit if you smoke</div>
+        </div>
+        <div style="background:var(--jade-lo);border:1px solid rgba(46,204,138,0.25);border-radius:14px;padding:14px">
+          <div style="font-size:11px;color:var(--mist);margin-bottom:4px">Employer match</div>
+          <div style="font-family:'Fraunces',serif;font-size:32px;color:var(--jade);line-height:1" id="enroll-match-display">¥500</div>
+          <div style="font-size:11px;color:var(--cloud);margin-top:4px">Bonus on verified quit</div>
+          <div style="font-size:10px;color:var(--jade);margin-top:2px">Funded by CRRC</div>
+        </div>
       </div>
-      <div style="font-size:14px;color:var(--cloud);line-height:1.6">if you quit smoking and pass your <strong style="color:var(--white)">Month 6 cotinine test</strong>. No money required from you — this is entirely funded by CRRC Corporation.</div>
+      <div style="background:rgba(255,255,255,0.04);border-radius:12px;padding:12px;text-align:center">
+        <div style="font-size:11px;color:var(--mist);margin-bottom:4px">Total you earn if you quit</div>
+        <div style="font-family:'Fraunces',serif;font-size:38px;color:var(--white);line-height:1" id="enroll-total-display">¥800</div>
+        <div style="font-size:11px;color:var(--mist);margin-top:3px">Verified by cotinine test at Month 3 &amp; Month 6</div>
+      </div>
     </div>
 
-    <!-- How you earn it -->
-    <div class="sec-lbl">How it works</div>
+    <!-- Your commitment slider -->
+    <div class="sec-lbl">Set your commitment amount</div>
+    <div style="margin:0 20px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px">
+      <div style="font-size:12px;color:var(--mist);margin-bottom:4px">If you smoke during the program, you forfeit this amount. If you quit, you get it back — plus the employer match.</div>
+      <input type="range" class="pledge-slider" id="stake-slider" min="100" max="1000" step="100" value="300" oninput="updStake(this.value)" style="margin-top:14px">
+      <div class="presets" style="padding:10px 0 0;justify-content:flex-start">
+        <button class="pre on" onclick="setStake(100,this)">¥100</button>
+        <button class="pre" onclick="setStake(300,this)">¥300</button>
+        <button class="pre" onclick="setStake(500,this)">¥500</button>
+        <button class="pre" onclick="setStake(1000,this)">¥1,000</button>
+      </div>
+      <div style="font-size:11px;color:var(--mist);margin-top:10px;line-height:1.5">💡 Research shows that putting your own money at stake is more motivating than a bonus alone. The more you commit, the stronger the incentive.</div>
+    </div>
+
+    <!-- How stakes work -->
+    <div class="sec-lbl">How the matching works</div>
     <div class="fund-table">
       <div class="frow">
-        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🏢</div><div><div>Employer bonus</div><div class="frow-sub">Funded 100% by your company</div></div></div>
+        <div class="frow-l"><div class="frow-ico" style="background:var(--ember-lo)">💰</div><div><div>Your commitment stake</div><div class="frow-sub">Held in escrow for 6 months</div></div></div>
+        <div class="frow-amt" id="f-stake-table" style="color:var(--ember)">¥300</div>
+      </div>
+      <div class="frow">
+        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🏢</div><div><div>Employer match bonus</div><div class="frow-sub">Paid on cotinine-verified quit</div></div></div>
         <div class="frow-amt">¥500</div>
       </div>
       <div class="frow">
-        <div class="frow-l"><div class="frow-ico" style="background:rgba(74,158,255,.12)">🧪</div><div><div>Verified by cotinine test</div><div class="frow-sub">Biological proof — not self-reported</div></div></div>
-        <div style="font-size:12px;color:var(--blue);font-weight:700;font-family:'Space Mono',monospace">Month 3 + 6</div>
-      </div>
-      <div class="frow">
-        <div class="frow-l"><div class="frow-ico" style="background:var(--gold-lo)">🎁</div><div><div>Paid as a family gift</div><div class="frow-sub">JD.com, education fund, elder care, travel</div></div></div>
-        <div style="font-size:12px;color:var(--gold);font-weight:700;font-family:'Space Mono',monospace">Your choice</div>
+        <div class="frow-l"><div class="frow-ico" style="background:rgba(74,158,255,.12)">🧪</div><div><div>Verified at Month 3 + Month 6</div><div class="frow-sub">Biological saliva test — not self-reported</div></div></div>
+        <div style="font-size:11px;color:var(--blue);font-weight:700;font-family:'Space Mono',monospace">2 tests</div>
       </div>
       <div class="frow frow-total">
-        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">✓</div><div style="font-size:15px;font-weight:700">No money required from you</div></div>
-        <div class="frow-amt">¥0 risk</div>
+        <div class="frow-l"><div class="frow-ico" style="background:var(--jade-lo)">🎯</div><div style="font-size:14px;font-weight:700">You earn if you quit</div></div>
+        <div class="frow-amt" id="f-total-table">¥800</div>
       </div>
     </div>
 
     <!-- Team bonus callout -->
-    <div style="margin:16px 20px 0;padding:16px;background:var(--jade-lo);border:1px solid rgba(46,204,138,.2);border-radius:18px;">
-      <div style="font-size:13px;font-weight:700;color:var(--jade);margin-bottom:6px">🏆 Team bonus multiplier</div>
-      <div style="font-size:12px;color:var(--cloud);line-height:1.6">If 5 or more of your teammates also quit, everyone's bonus increases by <strong style="color:var(--jade)">1.5×</strong> — turning this into a collective achievement, not just a personal one.</div>
+    <div style="margin:14px 20px 0;padding:14px;background:var(--jade-lo);border:1px solid rgba(46,204,138,.2);border-radius:16px;">
+      <div style="font-size:13px;font-weight:700;color:var(--jade);margin-bottom:5px">🏆 Team multiplier</div>
+      <div style="font-size:12px;color:var(--cloud);line-height:1.6">If 5+ teammates also quit, everyone's employer match increases by <strong style="color:var(--jade)">1.5×</strong> to ¥750 — quitting becomes a team achievement.</div>
     </div>
 
-    <!-- Fix 2: Devices as optional -->
+    <!-- Optional devices -->
     <div class="sec-lbl">Optional — Connect Devices</div>
-    <div style="margin:0 20px 10px;font-size:12px;color:var(--mist);line-height:1.5">These are optional extras that help us detect cravings earlier and send more timely nudges. The core program works without them — only the cotinine test is required for verification.</div>
+    <div style="margin:0 20px 10px;font-size:12px;color:var(--mist);line-height:1.5">These help detect cravings earlier and send more timely nudges. The core program only requires the cotinine test.</div>
     <div class="connect-wrap">
       <div class="crow">
-        <div class="crow-l"><span style="font-size:20px">⌚</span><div><div>Huawei Health / Apple Watch <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">HRV · Heart Rate · SpO₂ · Steps</div></div></div>
+        <div class="crow-l"><span style="font-size:20px">⌚</span><div><div>Huawei Health / Apple Watch <span style="font-size:10px;color:var(--mist)">(optional)</span></div><div class="crow-sub">HRV · Heart Rate · SpO₂ · Steps</div></div></div>
         <div class="tog" onclick="this.classList.toggle('on')"></div>
       </div>
       <div class="crow">
-        <div class="crow-l"><span style="font-size:20px">💳</span><div><div>WeChat Pay <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">Tobacco merchant transaction monitoring</div></div></div>
+        <div class="crow-l"><span style="font-size:20px">💳</span><div><div>WeChat Pay <span style="font-size:10px;color:var(--mist)">(optional)</span></div><div class="crow-sub">Tobacco merchant transaction monitoring</div></div></div>
         <div class="tog" onclick="this.classList.toggle('on')"></div>
       </div>
       <div class="crow">
-        <div class="crow-l"><span style="font-size:20px">🎤</span><div><div>Acoustic Monitoring <span style="font-size:10px;color:var(--mist);font-weight:400">(optional)</span></div><div class="crow-sub">Cough frequency via microphone</div></div></div>
+        <div class="crow-l"><span style="font-size:20px">🎤</span><div><div>Acoustic Monitoring <span style="font-size:10px;color:var(--mist)">(optional)</span></div><div class="crow-sub">Cough frequency via microphone</div></div></div>
         <div class="tog" onclick="this.classList.toggle('on')"></div>
       </div>
     </div>
-    <div style="padding:20px"><button class="btn btn-jade" onclick="goTo('s-dash')">Enroll in Program →</button></div>
+    <div style="padding:20px"><button class="btn btn-fire" onclick="goTo('s-dash')">Commit &amp; Begin Program →</button></div>
   </div>
 </div>
 
@@ -474,8 +502,8 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="sh-days">23</div>
       <div class="sh-lbl">smoke-free days</div>
       <div class="sh-meta">
-        <div class="sh-m"><strong id="dash-streak-earned">¥185</strong>bonus earned</div>
-        <div class="sh-m"><strong id="dash-streak-remaining">¥315</strong>still to unlock</div>
+        <div class="sh-m"><strong id="dash-streak-earned">¥296</strong>earned back</div>
+        <div class="sh-m"><strong id="dash-streak-remaining">¥504</strong>still to win</div>
         <div class="sh-m"><strong>7d</strong>to payout</div>
       </div>
     </div>
@@ -496,14 +524,14 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
       <div class="vchip warn"><div class="vi">🎤</div><div class="vl">Cough</div><div class="vs">Tracking</div></div>
       <div class="vchip ok"><div class="vi">🧪</div><div class="vl">Cotinine</div><div class="vs">✓ Wk 12</div></div>
     </div>
-    <div class="sec-lbl">Your Bonus Progress</div>
+    <div class="sec-lbl">Your Commitment Pool</div>
     <div class="pledge-prog card">
-      <div class="pp-hdr"><div><div class="pp-lbl">Employer bonus available</div></div><div><div class="pp-amt" id="dash-total">¥500</div><div class="pp-sub">37% earned back</div></div></div>
+      <div class="pp-hdr"><div><div class="pp-lbl">Total at stake</div></div><div><div class="pp-amt" id="dash-total">¥800</div><div class="pp-sub">37% earned back</div></div></div>
       <div class="pbar"><div class="pfill" style="width:37%"></div></div>
       <div class="pp-mini">
-        <div class="ppm"><div class="ppm-v" id="dash-ppm-emp">¥500</div><div class="ppm-l">Employer bonus</div></div>
-        <div class="ppm"><div class="ppm-v" id="dash-earned">¥185</div><div class="ppm-l">Earned so far</div></div>
-        <div class="ppm"><div class="ppm-v" id="dash-remaining">¥315</div><div class="ppm-l">Still to unlock</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-emp">¥300</div><div class="ppm-l" style="color:var(--ember)">Your stake</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-ppm-match">¥500</div><div class="ppm-l">Employer match</div></div>
+        <div class="ppm"><div class="ppm-v" id="dash-earned">¥296</div><div class="ppm-l">Earned back</div></div>
       </div>
     </div>
     <div class="sec-lbl">Health Progress</div>
@@ -536,7 +564,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
     <div class="ni on"><div class="ico">🏠</div><div class="lbl">Home</div></div>
     <div class="ni" onclick="goTo('s-cotinine')"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
     <div class="ni" onclick="goTo('s-gifts')"><div class="ico">🎁</div><div class="lbl">Gifts</div></div>
-    <div class="ni" onclick="goTo('s-pledge')"><div class="ico">💰</div><div class="lbl">Pledge</div></div>
+    <div class="ni" onclick="goTo('s-feedback')"><div class="ico">💬</div><div class="lbl">Feedback</div></div>
     <div class="ni" onclick="goTo('s-login')"><div class="ico">🚪</div><div class="lbl">Log Out</div></div>
   </div>
 </div>
@@ -556,10 +584,11 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
         <div class="a-ctx-item"><div class="a-ctx-ico">🕐</div><div style="color:var(--mist);font-size:10px">Time</div><div class="a-ctx-val">3:47 PM</div></div>
       </div>
       <div class="a-stakes">
-        <div class="a-s-lbl">If you smoke now, you lose your progress toward:</div>
-        <div class="srow"><div class="srow-f">🏢 Employer bonus (fully funded by CRRC)</div><div class="srow-a" id="jitai-emp">¥500</div></div>
-        <div class="srow"><div class="srow-f">🏆 Team multiplier (your team is counting on you)</div><div class="srow-a">1.5×</div></div>
-        <div class="srow"><div class="srow-total srow-f">Bonus you'd be giving up</div><div class="srow-a srow-total-a" id="jitai-total">¥500</div></div>
+        <div class="a-s-lbl">If you smoke now, you lose:</div>
+        <div class="srow"><div class="srow-f">💰 Your own commitment stake</div><div class="srow-a" id="jitai-stake">¥300</div></div>
+        <div class="srow"><div class="srow-f">🏢 Employer match (CRRC bonus)</div><div class="srow-a" id="jitai-emp">¥500</div></div>
+        <div class="srow"><div class="srow-f">🏆 Team multiplier progress</div><div class="srow-a">1.5×</div></div>
+        <div class="srow"><div class="srow-total srow-f">Total you'd forfeit</div><div class="srow-a srow-total-a" id="jitai-total">¥800</div></div>
       </div>
     </div>
     <div class="a-btns">
@@ -702,6 +731,7 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   <div class="nav">
     <div class="ni on"><div class="ico">📊</div><div class="lbl">Dashboard</div></div>
     <div class="ni" onclick="goTo('s-enroll')"><div class="ico">➕</div><div class="lbl">Enroll</div></div>
+    <div class="ni"><div class="ico">🧪</div><div class="lbl">Verify</div></div>
     <div class="ni" onclick="goTo('s-login')"><div class="ico">🚪</div><div class="lbl">Log Out</div></div>
   </div>
 </div>
@@ -717,13 +747,28 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
         <div class="ef-field"><label class="ef-lbl">No. of Employees</label><input class="ef-input" type="number" placeholder="120"></div>
         <div class="ef-field"><label class="ef-lbl">Start Date</label><input class="ef-input" type="date"></div>
       </div>
-      <div class="ef-field"><label class="ef-lbl">Bonus per Verified Quitter</label>
+
+      <!-- Matching mechanic -->
+      <div class="ef-field">
+        <label class="ef-lbl">Employer Match Bonus (per verified quitter)</label>
         <select class="ef-select">
           <option>¥500 (Standard — Cochrane validated)</option>
           <option>¥600 (Peking University RCT benchmark)</option>
           <option>¥800 (Premium incentive tier)</option>
         </select>
       </div>
+      <div class="ef-field">
+        <label class="ef-lbl">Employee Commitment Range (min – max stake)</label>
+        <select class="ef-select">
+          <option>¥100 – ¥500 (employee sets own amount)</option>
+          <option>¥200 – ¥1,000 (higher stakes)</option>
+          <option>No employee stake required</option>
+        </select>
+      </div>
+      <div style="margin:0 0 14px;padding:12px 14px;background:var(--ember-lo);border:1px solid rgba(255,75,31,0.2);border-radius:14px;font-size:12px;color:var(--cloud);line-height:1.5">
+        💡 <strong style="color:var(--white)">Why matching works:</strong> Loss aversion is a stronger motivator than a bonus alone. Employees who put up their own money are more likely to follow through. If they smoke, they forfeit their stake.
+      </div>
+
       <div class="ef-field"><label class="ef-lbl">Gift Type</label>
         <select class="ef-select">
           <option>Employee choice (JD, Education, Elder Care, Travel)</option>
@@ -740,15 +785,34 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
         </select>
       </div>
     </div>
+
+    <!-- Add-on services -->
+    <div class="sec-lbl">Optional Add-On Services</div>
+    <div style="margin:0 20px 6px;font-size:12px;color:var(--mist);line-height:1.5">Cinder partners with third-party providers for these services. We connect employees — we don't manage them directly.</div>
+    <div class="connect-wrap">
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">🧪</span><div><div>Cotinine Kit Ordering <span style="font-size:10px;color:var(--mist)">(add-on)</span></div><div class="crow-sub">Saliva test kits via biotech partner · Month 3 + 6</div></div></div>
+        <div class="tog on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">💊</span><div><div>Medication Referral <span style="font-size:10px;color:var(--mist)">(add-on)</span></div><div class="crow-sub">Connect employees to cessation meds via health plan</div></div></div>
+        <div class="tog" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="crow">
+        <div class="crow-l"><span style="font-size:20px">💳</span><div><div>Medication Cost Assistance <span style="font-size:10px;color:var(--mist)">(add-on)</span></div><div class="crow-sub">Help employees manage upfront drug costs via HR</div></div></div>
+        <div class="tog" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
     <div class="sec-lbl">Projected Outcomes</div>
     <div class="program-preview">
-      <div class="pp-title">📊 Estimated Impact (120 employees)</div>
-      <div class="pp-row"><div class="pp-k">Expected quitters at 15%</div><div class="pp-v">18 employees</div></div>
+      <div class="pp-title">📊 Estimated Impact (120 employees, ¥500 match)</div>
+      <div class="pp-row"><div class="pp-k">Expected quitters at 25%</div><div class="pp-v">30 employees</div></div>
       <div class="pp-row"><div class="pp-k">Software license cost</div><div class="pp-v">¥24,000 / yr</div></div>
-      <div class="pp-row"><div class="pp-k">Expected bonus disbursements</div><div class="pp-v">¥9,000</div></div>
-      <div class="pp-row"><div class="pp-k">Total cost to company</div><div class="pp-v">¥33,000</div></div>
-      <div class="pp-row"><div class="pp-k">Est. healthcare savings</div><div class="pp-v">¥172,800</div></div>
-      <div class="pp-row"><div class="pp-k">Net ROI</div><div class="pp-v" style="color:var(--jade)">~5.2× return</div></div>
+      <div class="pp-row"><div class="pp-k">Expected match disbursements</div><div class="pp-v">¥15,000</div></div>
+      <div class="pp-row"><div class="pp-k">Total cost to company</div><div class="pp-v">¥39,000</div></div>
+      <div class="pp-row"><div class="pp-k">Est. healthcare savings</div><div class="pp-v">¥288,000</div></div>
+      <div class="pp-row"><div class="pp-k">Net ROI</div><div class="pp-v" style="color:var(--jade)">~7.4× return</div></div>
     </div>
     <div style="padding:0 20px;display:flex;flex-direction:column;gap:10px">
       <button class="btn btn-jade" onclick="goTo('s-emp-dash')">Launch Program →</button>
@@ -802,118 +866,164 @@ html,body{height:100%;background:#0a0a0c;display:flex;justify-content:center;ali
   <button id="breath-skip-btn" class="btn btn-ghost" onclick="goTo('s-dash')">Skip exercise</button>
 </div>
 
+<!-- FEEDBACK SCREEN -->
+<div id="s-feedback" class="scr">
+  <div class="hdr"><div class="back" onclick="goTo('s-dash')">←</div><div class="htitle">Help Us Grow</div></div>
+  <div class="body" style="padding-bottom:24px">
+    <div style="margin:8px 20px 0;background:linear-gradient(135deg,#1a1014,#2a1820);border:1px solid rgba(255,75,31,0.15);border-radius:24px;padding:24px 20px;text-align:center">
+      <div style="font-size:40px;margin-bottom:12px">🌱</div>
+      <div style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:8px">What should we tackle next?</div>
+      <div style="font-size:13px;color:var(--cloud);line-height:1.6">Cinder is built for any habit — not just smoking. Tell us what you'd like help with next.</div>
+    </div>
+
+    <div class="sec-lbl">Vote for the next program</div>
+    <div style="margin:0 20px;display:flex;flex-direction:column;gap:10px">
+      <div class="habit-vote-row" onclick="voteHabit(this)">
+        <div class="hv-left"><div style="font-size:22px">🍺</div><div><div class="hv-name">Alcohol Reduction</div><div class="hv-sub">Tackle binge drinking &amp; 干杯 culture</div></div></div>
+        <div class="hv-bar-wrap"><div class="hv-bar" style="width:68%"></div><div class="hv-pct">68%</div></div>
+      </div>
+      <div class="habit-vote-row" onclick="voteHabit(this)">
+        <div class="hv-left"><div style="font-size:22px">🏃</div><div><div class="hv-name">Weight &amp; Activity</div><div class="hv-sub">Step goals, sedentary alerts, BMI tracking</div></div></div>
+        <div class="hv-bar-wrap"><div class="hv-bar" style="width:54%"></div><div class="hv-pct">54%</div></div>
+      </div>
+      <div class="habit-vote-row" onclick="voteHabit(this)">
+        <div class="hv-left"><div style="font-size:22px">😴</div><div><div class="hv-name">Sleep Quality</div><div class="hv-sub">Late-night work culture &amp; recovery</div></div></div>
+        <div class="hv-bar-wrap"><div class="hv-bar" style="width:41%"></div><div class="hv-pct">41%</div></div>
+      </div>
+      <div class="habit-vote-row" onclick="voteHabit(this)">
+        <div class="hv-left"><div style="font-size:22px">🧘</div><div><div class="hv-name">Stress &amp; Mental Health</div><div class="hv-sub">Burnout prevention, mindfulness habits</div></div></div>
+        <div class="hv-bar-wrap"><div class="hv-bar" style="width:29%"></div><div class="hv-pct">29%</div></div>
+      </div>
+    </div>
+
+    <div class="sec-lbl">Suggest something else</div>
+    <div style="margin:0 20px">
+      <textarea id="feedback-text" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;color:var(--white);font-size:14px;font-family:'Noto Sans SC',sans-serif;outline:none;resize:none;min-height:90px;line-height:1.6" placeholder="e.g. 'I'd love a program for reducing late-night phone use...'"></textarea>
+      <div style="margin-top:6px;font-size:11px;color:var(--mist)">Your feedback goes directly to the Cinder product team.</div>
+    </div>
+
+    <div style="margin:14px 20px 0;background:var(--jade-lo);border:1px solid rgba(46,204,138,0.2);border-radius:16px;padding:14px">
+      <div style="font-size:13px;font-weight:700;color:var(--jade);margin-bottom:5px">🔭 Cinder's roadmap</div>
+      <div style="font-size:12px;color:var(--cloud);line-height:1.6">The same platform — team competition, financial matching, biological verification, ESG reporting — applies to any measurable habit. Smoking is just the start.</div>
+    </div>
+
+    <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-jade" onclick="submitFeedback()">Submit Feedback →</button>
+    </div>
+    <div class="sp"></div>
+  </div>
 </div>
+
+</div>
+<style>
+.habit-vote-row{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:border-color .15s,transform .15s}
+.habit-vote-row:active{transform:scale(.98)}
+.habit-vote-row.voted{border-color:var(--ember);background:var(--ember-lo)}
+.hv-left{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.hv-name{font-size:14px;font-weight:700}
+.hv-sub{font-size:11px;color:var(--mist);margin-top:2px}
+.hv-bar-wrap{display:flex;align-items:center;gap:8px}
+.hv-bar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--ember),var(--gold));transition:width .4s ease}
+.hv-pct{font-family:'Space Mono',monospace;font-size:11px;color:var(--cloud);min-width:28px}
+@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
+@keyframes ring-pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(240,192,64,.3)}50%{box-shadow:0 0 0 20px rgba(240,192,64,0)}}
+</style>
 <script>
 function goTo(id){
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   document.getElementById(id).classList.add('on');
   if(id==='s-breathing') startBreathingAnim();
 }
-function updPledge(v){
+
+function updStake(v){
   v=parseInt(v);
-  document.getElementById('pd').textContent=v.toLocaleString();
-  document.getElementById('f-you').textContent='¥'+v.toLocaleString();
-  document.getElementById('f-emp').textContent='¥'+v.toLocaleString();
-  document.getElementById('f-soc').textContent='¥'+v.toLocaleString();
-  document.getElementById('f-tot').textContent='¥'+(v*3).toLocaleString();
-  const pct=((v-100)/(2000-100))*100;
-  document.getElementById('pslider').style.background=
+  const total=v+500;
+  const earned=Math.round(total*0.37);
+  document.getElementById('enroll-stake-display').textContent='¥'+v.toLocaleString();
+  document.getElementById('enroll-total-display').textContent='¥'+total.toLocaleString();
+  document.getElementById('f-stake-table').textContent='¥'+v.toLocaleString();
+  document.getElementById('f-total-table').textContent='¥'+total.toLocaleString();
+  const pct=((v-100)/(1000-100))*100;
+  document.getElementById('stake-slider').style.background=
     `linear-gradient(to right,var(--ember) ${pct}%,var(--haze) ${pct}%)`;
   // sync dashboard
-  const total = v*3;
-  const earned = Math.round(total*0.37);
-  const remaining = total - earned;
   document.getElementById('dash-total').textContent='¥'+total.toLocaleString();
-  document.getElementById('dash-earned').textContent='¥'+earned.toLocaleString();
-  document.getElementById('dash-remaining').textContent='¥'+remaining.toLocaleString();
-  document.getElementById('dash-ppm-you').textContent='¥'+v.toLocaleString();
   document.getElementById('dash-ppm-emp').textContent='¥'+v.toLocaleString();
-  document.getElementById('dash-ppm-soc').textContent='¥'+v.toLocaleString();
-  // sync JITAI alert
-  document.getElementById('jitai-you').textContent='¥'+v.toLocaleString();
-  document.getElementById('jitai-emp').textContent='¥'+v.toLocaleString();
-  document.getElementById('jitai-soc').textContent='¥'+v.toLocaleString();
+  document.getElementById('dash-earned').textContent='¥'+earned.toLocaleString();
+  document.getElementById('dash-streak-earned').textContent='¥'+earned.toLocaleString();
+  document.getElementById('dash-streak-remaining').textContent='¥'+(total-earned).toLocaleString();
+  // sync JITAI
+  document.getElementById('jitai-stake').textContent='¥'+v.toLocaleString();
   document.getElementById('jitai-total').textContent='¥'+total.toLocaleString();
 }
-function setPledge(v,el){
-  document.getElementById('pslider').value=v;
-  updPledge(v);
+function setStake(v,el){
+  document.getElementById('stake-slider').value=v;
+  updStake(v);
   document.querySelectorAll('.pre').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
 }
+
 function selGift(el){
   document.querySelectorAll('.gcard').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');
-  // update gift confirm screen icon/name to match selection
-  const name = el.querySelector('.gc-name').textContent;
-  const ico = el.querySelector('.gc-ico').textContent;
-  const confirmIcon = document.querySelector('#s-gift-confirm .w-76px, #s-gift-confirm [style*="font-size:36px"]');
-  if(confirmIcon) confirmIcon.textContent = ico;
-  const confirmText = document.querySelector('#s-gift-confirm strong');
-  const amt = el.querySelector('.gc-amt').textContent.split(' ')[0];
-  if(confirmText) confirmText.textContent = amt + ' ' + name;
 }
+
+function voteHabit(el){
+  document.querySelectorAll('.habit-vote-row').forEach(r=>r.classList.remove('voted'));
+  el.classList.add('voted');
+  const bar=el.querySelector('.hv-bar');
+  const pct=el.querySelector('.hv-pct');
+  const cur=parseInt(bar.style.width);
+  const n=Math.min(cur+3,99);
+  bar.style.width=n+'%'; pct.textContent=n+'%';
+}
+function submitFeedback(){
+  document.getElementById('feedback-text').value='';
+  document.querySelectorAll('.habit-vote-row').forEach(r=>r.classList.remove('voted'));
+  alert('Thank you! Your feedback has been sent to the Cinder team. 🙏');
+  goTo('s-dash');
+}
+
 function startBreathing(){ goTo('s-breathing'); }
-
-let breathTimer = null;
+let breathTimer=null;
 function startBreathingAnim(){
-  // Reset state
   clearInterval(breathTimer);
-  const phases = [
-    {label:'Breathe In', instruction:'Inhale slowly through your nose for 4 counts.', duration:4},
-    {label:'Hold', instruction:'Hold your breath gently — stay calm.', duration:4},
-    {label:'Breathe Out', instruction:'Exhale slowly through your mouth for 8 counts.', duration:8},
-    {label:'Hold', instruction:'Rest for 4 counts before the next breath.', duration:4},
+  const phases=[
+    {label:'Breathe In',instruction:'Inhale slowly through your nose for 4 counts.',duration:4},
+    {label:'Hold',instruction:'Hold your breath gently — stay calm.',duration:4},
+    {label:'Breathe Out',instruction:'Exhale slowly through your mouth for 8 counts.',duration:8},
+    {label:'Hold',instruction:'Rest for 4 counts before the next breath.',duration:4},
   ];
-  const totalSeconds = 60;
-  let elapsed = 0;
-  let phaseIdx = 0;
-  let phaseElapsed = 0;
-
-  const labelEl = document.getElementById('breath-label');
-  const countEl = document.getElementById('breath-count');
-  const instrEl = document.getElementById('breath-instruction');
-  const progEl  = document.getElementById('breath-progress');
-  const timerEl = document.getElementById('total-timer');
-  const doneBtn = document.getElementById('breath-done-btn');
-  const skipBtn = document.getElementById('breath-skip-btn');
-
-  doneBtn.style.display = 'none';
-  skipBtn.style.display = 'block';
-
+  const totalSeconds=60;
+  let elapsed=0,phaseIdx=0,phaseElapsed=0;
+  const labelEl=document.getElementById('breath-label'),
+        countEl=document.getElementById('breath-count'),
+        instrEl=document.getElementById('breath-instruction'),
+        progEl=document.getElementById('breath-progress'),
+        timerEl=document.getElementById('total-timer'),
+        doneBtn=document.getElementById('breath-done-btn'),
+        skipBtn=document.getElementById('breath-skip-btn');
+  doneBtn.style.display='none'; skipBtn.style.display='block';
   function tick(){
-    if(elapsed >= totalSeconds){
+    if(elapsed>=totalSeconds){
       clearInterval(breathTimer);
-      labelEl.textContent = 'Well done!';
-      countEl.textContent = '✓';
-      instrEl.textContent = 'You made it through. The craving has passed.';
-      progEl.style.width = '100%';
-      timerEl.textContent = 'Complete!';
-      doneBtn.style.display = 'block';
-      skipBtn.style.display = 'none';
+      labelEl.textContent='Well done!'; countEl.textContent='✓';
+      instrEl.textContent='You made it through. The craving has passed.';
+      progEl.style.width='100%'; timerEl.textContent='Complete!';
+      doneBtn.style.display='block'; skipBtn.style.display='none';
       return;
     }
-    const phase = phases[phaseIdx];
-    const remaining = phase.duration - phaseElapsed;
-    labelEl.textContent = phase.label;
-    countEl.textContent = remaining;
-    instrEl.textContent = phase.instruction;
-    progEl.style.width = ((elapsed / totalSeconds) * 100) + '%';
-    timerEl.textContent = (totalSeconds - elapsed) + 's remaining';
-    phaseElapsed++;
-    elapsed++;
-    if(phaseElapsed >= phase.duration){
-      phaseElapsed = 0;
-      phaseIdx = (phaseIdx + 1) % phases.length;
-    }
+    const phase=phases[phaseIdx];
+    labelEl.textContent=phase.label;
+    countEl.textContent=phase.duration-phaseElapsed;
+    instrEl.textContent=phase.instruction;
+    progEl.style.width=((elapsed/totalSeconds)*100)+'%';
+    timerEl.textContent=(totalSeconds-elapsed)+'s remaining';
+    phaseElapsed++; elapsed++;
+    if(phaseElapsed>=phase.duration){phaseElapsed=0;phaseIdx=(phaseIdx+1)%phases.length;}
   }
-  tick();
-  breathTimer = setInterval(tick, 1000);
+  tick(); breathTimer=setInterval(tick,1000);
 }
 </script>
-<style>
-@keyframes breathe{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
-@keyframes ring-pulse-gold{0%,100%{box-shadow:0 0 0 0 rgba(240,192,64,.3)}50%{box-shadow:0 0 0 20px rgba(240,192,64,0)}}
-</style>
 </body>
 </html>
