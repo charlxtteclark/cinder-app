@@ -15,7 +15,7 @@ This repository contains a fully interactive HTML prototype built for investor p
 
 ## What is Cinder?
 
-Cinder is a B2B2C SaaS platform that helps Chinese SOEs run verified, incentive-based smoking cessation programs. It addresses a structural market gap: SOEs face a mandatory April 2026 ESG disclosure deadline covering employee health metrics, but no compliant tool exists that combines biochemical verification, financial incentives, and audit-ready reporting.
+Cinder is a B2B2C PaaS platform that helps Chinese SOEs run verified, incentive-based smoking cessation programs. It addresses a structural market gap: SOEs face a mandatory April 2026 ESG disclosure deadline covering employee health metrics, but no compliant tool exists that combines biochemical verification, financial incentives, and audit-ready reporting.
 
 **How it works:**
 - Employees commit a personal stake (¥100–¥1,000) into an escrow-style program
